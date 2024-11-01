@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas import UserCreate, UserOut
 from app.crud import create_user, get_user_by_email
 from sqlalchemy.orm import Session
-from app.dependencies import get_db
+from app.database_connection import get_db
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt

@@ -1,41 +1,23 @@
+"""
+dependencies.py 模組包含了 FastAPI 應用中的依賴項，實作了用戶驗證。
+"""
 from typing import List
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv 
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-# 處理資料庫的建置
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from app.models import Base
-from dotenv import load_dotenv
-
 from app.models import User
 from app.crud import get_user
-
-load_dotenv()
+from app.database_connection import get_db
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-engine = create_engine(DATABASE_URL) # engine 連接資料庫
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) 
-Base.metadata.create_all(bind=engine) 
-
-# 初始化資料庫
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+ALGORITHM = "HS256" # 加密算法
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
-
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(

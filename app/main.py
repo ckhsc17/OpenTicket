@@ -1,10 +1,15 @@
+"""
+main.py 模組是 FastAPI 應用的入口點，用於創建 FastAPI 應用實例、設置路由、中間件等。
+uvicorn 命令行工具將使用此模組中的 app 實例來啟動 FastAPI 應用。
+"""
+
 import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+
 # 從 app.routers 導入各個模組的路由
 from app.routers import auth, users, events, tickets, orders, payments
-from app.dependencies import SessionLocal
+from app.database_connection import get_db
 
 
 # 創建 FastAPI 應用實例，並設置應用的標題
@@ -14,8 +19,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 設置允許跨來源資源共享（CORS）的來源
-# 這裡設置為允許所有來源，根據需求調整
+# 設置允許跨來源資源共享（CORS）的來源。這裏允許所有來源
 origins = [
     "*",  # 允許所有來源
     # 您也可以指定具體的前端應用網址，例如：
@@ -50,19 +54,6 @@ async def read_root():
 @app.get("/health")
 async def health_check():
     return {"status": "OK"}
-
-
-
-# 定義獲取資料庫會話的依賴
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# 將依賴傳遞給路由
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="localhost", port=8000, reload=True)
