@@ -3,13 +3,14 @@ from app.schemas import UserCreate, UserOut
 from app.crud import create_user, get_user_by_email
 from sqlalchemy.orm import Session
 from app.dependencies import get_db
-from app.dependencies import supabase
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from typing import Optional
 import os
 from dotenv import load_dotenv
+from pydantic import BaseModel
+
 
 load_dotenv() # 載入 .env 檔案
 

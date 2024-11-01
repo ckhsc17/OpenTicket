@@ -2,7 +2,6 @@ import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
 # 從 app.routers 導入各個模組的路由
 from app.routers import auth, users, events, tickets, orders, payments
 from app.dependencies import SessionLocal

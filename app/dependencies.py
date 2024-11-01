@@ -1,19 +1,20 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-from sqlalchemy.orm import Session
-from app.models import User
-from app.crud import get_user
 from typing import List
 import os
 from dotenv import load_dotenv
 
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
 # 處理資料庫的建置
+from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base
 from dotenv import load_dotenv
 
+from app.models import User
+from app.crud import get_user
 
 load_dotenv()
 
@@ -26,7 +27,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine) 
 
 # 初始化資料庫
-def get_db_session():
+def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -36,7 +37,7 @@ def get_db_session():
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db_session)) -> User:
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
