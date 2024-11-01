@@ -1,0 +1,3 @@
+pip install fastapi uvicorn supabase-py sqlalchemy alembic python-dotenv supabase
+pip install bcrypt
+pip install passlib[bcrypt] python-jose
