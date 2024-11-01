@@ -1,9 +1,12 @@
+"""
+models.py 模組包含了應用中的數據模型，使用 SQLAlchemy ORM 定義了用戶、活動、場地、座位、票券、訂單和支付等模型。
+用 SQLAlchemy ORM 定義數據模型後，就不用直接操作 SQL 語句，而是通過對象的方式來操作數據庫。
+"""
+
+import enum
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Date, DateTime, Enum
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-import enum
-
-Base = declarative_base()
+from app.database_connection import Base
 
 class UserRole(str, enum.Enum):
     User = "User"
@@ -20,7 +23,7 @@ class User(Base):
     role = Column(Enum(UserRole), nullable=False)
     created_at = Column(DateTime, server_default="CURRENT_TIMESTAMP")
 
-    events = relationship("Event", back_populates="organizer")
+    events = relationship("Event", back_populates="organizer") 
 
 class Event(Base):
     __tablename__ = "events"

@@ -14,6 +14,7 @@ from app.models import User
 from app.crud import get_user
 from app.database_connection import get_db
 
+load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256" # 加密算法
 
