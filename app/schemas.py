@@ -24,7 +24,7 @@ class UserOut(UserBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True 
 
 class EventBase(BaseModel):
     event_name: str
@@ -42,7 +42,7 @@ class EventOut(EventBase):
     organizer_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True 
 
 class VenueBase(BaseModel):
     venue_name: str
@@ -57,7 +57,7 @@ class VenueOut(VenueBase):
     venue_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True 
 
 class SeatBase(BaseModel):
     venue_id: int
@@ -73,7 +73,7 @@ class SeatOut(SeatBase):
     seat_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True 
 
 class TicketBase(BaseModel):
     event_id: int
@@ -88,7 +88,7 @@ class TicketOut(TicketBase):
     ticket_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True 
 
 class OrderBase(BaseModel):
     user_id: int
@@ -103,7 +103,7 @@ class OrderOut(OrderBase):
     order_date: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True 
 
 class PaymentBase(BaseModel):
     order_id: int
@@ -119,4 +119,4 @@ class PaymentOut(PaymentBase):
     payment_date: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True 

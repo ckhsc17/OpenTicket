@@ -8,19 +8,33 @@ from typing import List
 import os
 from dotenv import load_dotenv
 
+# 處理資料庫的建置
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.models import Base
+from dotenv import load_dotenv
+
+
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+engine = create_engine(DATABASE_URL) # engine 連接資料庫
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) 
+Base.metadata.create_all(bind=engine) 
 
+# 初始化資料庫
 def get_db_session():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db_session)) -> User:
     credentials_exception = HTTPException(
