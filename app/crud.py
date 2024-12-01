@@ -20,6 +20,7 @@ def get_password_hash(password):
 def create_user(db: Session, user: UserCreate) -> User:
     hashed_password = get_password_hash(user.password)
     db_user = User(
+
         username=user.username,
         email=user.email,
         password=hashed_password,
@@ -82,6 +83,15 @@ def get_event(db: Session, event_id: int) -> Optional[Event]:
 def get_events(db: Session, skip: int = 0, limit: int = 100) -> List[Event]:
     return db.query(Event).offset(skip).limit(limit).all()
 
+# 參加活動
+def join_event(db: Session, event_id: int, user_id: int):
+    db_event = db.query(Event).filter(Event.event_id == event_id).first()
+    if db_event:
+        #db_event.participants.append(user_id)  # 假設有一個參與者欄位
+        db.commit()
+        db.refresh(db_event)
+    return db_event
+
 def update_event(db: Session, event_id: int, event_update: EventCreate) -> Optional[Event]:
     event = db.query(Event).filter(Event.event_id == event_id).first()
     if not event:
@@ -95,6 +105,14 @@ def update_event(db: Session, event_id: int, event_update: EventCreate) -> Optio
     db.commit()
     db.refresh(event)
     return event
+
+def leave_event(db: Session, event_id: int, user_id: int):
+    db_event = db.query(Event).filter(Event.event_id == event_id).first()
+    if db_event:
+        #db_event.participants.remove(user_id)  # 假設有一個參與者欄位
+        db.commit()
+        db.refresh(db_event)
+    return db_event
 
 def delete_event(db: Session, event_id: int) -> bool:
     event = db.query(Event).filter(Event.event_id == event_id).first()

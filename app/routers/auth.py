@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas import UserCreate, UserOut
+from app.models import User
 from app.crud import create_user, get_user_by_email
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
@@ -44,6 +45,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+def check_organizer_role(user: User):
+    if user.role != "Organizer":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only organizers can perform this action")
+
 @router.post("/register", response_model=UserOut, tags=["Authentication"])
 def register(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = get_user_by_email(db, user.email)
@@ -54,6 +59,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", tags=["Authentication"])
 def login(credentials: Login, db: Session = Depends(get_db)):
+    print("hi login")
     user = authenticate_user(db, credentials.email, credentials.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")

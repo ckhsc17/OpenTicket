@@ -15,7 +15,7 @@ class UserRole(str, enum.Enum):
 
 class User(Base):
     __tablename__ = "users"
-    user_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
@@ -24,6 +24,11 @@ class User(Base):
     created_at = Column(DateTime, server_default="CURRENT_TIMESTAMP")
 
     events = relationship("Event", back_populates="organizer") 
+
+class EventStatus(str, enum.Enum):
+    Scheduled = "Scheduled"
+    Canceled = "Canceled"
+    Completed = "Completed"
 
 class Event(Base):
     __tablename__ = "events"
@@ -70,10 +75,11 @@ class Ticket(Base):
     seat_id = Column(Integer, ForeignKey("seats.seat_id", ondelete="SET NULL"))
     price = Column(DECIMAL(10, 2), nullable=False)
     status = Column(String(20), default="Available")
+    order_id = Column(Integer, ForeignKey('orders.order_id')) 
 
     event = relationship("Event", back_populates="tickets")
     seat = relationship("Seat", back_populates="ticket")
-    order = relationship("Order", back_populates="ticket")
+    order = relationship("Order", back_populates="tickets")
 
 class OrderStatus(str, enum.Enum):
     Pending = "Pending"

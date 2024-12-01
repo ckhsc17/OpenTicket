@@ -56,6 +56,7 @@ async def health_check():
     return {"status": "OK"}
 
 app.include_router(auth.router) # 將 auth.py 中的 router 加入到 app 中
+app.include_router(events.router) # 將 events.py 中的 router 加入到 app 中
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="localhost", port=8000, reload=True)
