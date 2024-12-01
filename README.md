@@ -27,4 +27,10 @@ Ctrl+Shift+P（或 Cmd+Shift+P）並選擇 Python: Restart Language Server。
 > sudo npm run dev
 
 ## 
-python: 3.11版，各種package才能順利運行
+python: 3.11版(3.9也行)，各種package才能順利運行
+
+'''
+pip install fastapi uvicorn supabase-py sqlalchemy alembic python-dotenv supabase
+pip install bcrypt
+pip install passlib[bcrypt] python-jose
+'''
