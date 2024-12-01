@@ -34,3 +34,9 @@ pip install fastapi uvicorn supabase-py sqlalchemy alembic python-dotenv supabas
 pip install bcrypt
 pip install passlib[bcrypt] python-jose
 '''
+
+## Update Log
+---
+> ### 2024/12/02.a
+> Add codes to events.py, some functions to crud.py to deal with event operation (yet to debug)
+> Add data generation codes (users, venues, events) and update in supabase
