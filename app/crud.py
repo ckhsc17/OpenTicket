@@ -65,7 +65,7 @@ def delete_user(db: Session, user_id: int) -> bool:
 def create_event(db: Session, event: EventCreate, organizer_id: int) -> Event:
     db_event = Event(
         organizer_id=organizer_id,
-        event_id=event.event_id,
+        #event_id=event.event_id,
         event_name=event.event_name,
         performer=event.performer,
         event_date=event.event_date,

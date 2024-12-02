@@ -18,6 +18,7 @@ class UserCreate(UserBase):
     password: constr(min_length=6)
     role: UserRole
 
+#看你有哪些屬性需要在輸出時顯示
 class UserOut(UserBase):
     user_id: int
     role: UserRole
@@ -28,7 +29,7 @@ class UserOut(UserBase):
         #orm_mode = True
 
 class EventBase(BaseModel):
-    event_id: int #先手動加入，之後會自動生成
+    #event_id: int #先手動加入，之後會自動生成
     event_name: str
     performer: str
     event_date: date
@@ -40,7 +41,7 @@ class EventBase(BaseModel):
 
 # 參考 UserCreate 的寫法，定義 EventCreate
 class EventCreate(EventBase):
-    event_id: int #先手動加入，之後會自動生成
+    #event_id: int #先手動加入，之後會自動生成
     event_name: constr(min_length=1, max_length=100)
     performer: constr(min_length=1, max_length=50)
     venue_id: int
@@ -53,11 +54,11 @@ class EventCreate(EventBase):
 
 class EventOut(EventBase):
     event_id: int
-    event_name: str
-    performer: str
-    event_date: date
-    venue_id: int
-    status: str
+    #event_name: str
+    #performer: str
+    #event_date: date
+    #venue_id: int
+    #status: str
     organizer_id: int
 
     class Config:

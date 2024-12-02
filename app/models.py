@@ -41,7 +41,7 @@ class Event(Base):
     #description = Column(String) 未來可加入活動描述
     status = Column(String(20), default="Scheduled")
 
-    organizer = relationship("User", back_populates="events")
+    organizer = relationship("User", back_populates="events") #這個拿掉會影響mapping？
     venue = relationship("Venue", back_populates="events")
     tickets = relationship("Ticket", back_populates="event")
 
