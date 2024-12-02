@@ -21,7 +21,7 @@ Ctrl+Shift+P（或 Cmd+Shift+P）並選擇 Python: Restart Language Server。
 ## Execution
 
 **Server**
-> uvicorn app.api.main:app --reload
+> uvicorn app.main:app --reload
 
 **Client**
 > sudo npm run dev
@@ -43,3 +43,6 @@ pip3 install passlib[bcrypt] python-jose
 
 > ### 2024/12/02.b
 > Finish the function of searching for events.py
+
+> ### 2024/12/02.c
+> Finish the fake data which satisfy that "every ticket is belong to an order"
