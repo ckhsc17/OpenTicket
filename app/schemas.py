@@ -25,24 +25,44 @@ class UserOut(UserBase):
 
     class Config:
         from_attributes = True 
+        #orm_mode = True
 
 class EventBase(BaseModel):
+    event_id: int #先手動加入，之後會自動生成
     event_name: str
     performer: str
     event_date: date
     venue_id: int
-    description: Optional[str] = None
+    #description: Optional[str] = None 
     status: Optional[str] = "Scheduled"
 
+    
+
+# 參考 UserCreate 的寫法，定義 EventCreate
 class EventCreate(EventBase):
-    pass
+    event_id: int #先手動加入，之後會自動生成
+    event_name: constr(min_length=1, max_length=100)
+    performer: constr(min_length=1, max_length=50)
+    venue_id: int
+    event_date: date
+    status: Optional[str] = "Scheduled"
+
+    class Config:
+        from_attributes = True 
+
 
 class EventOut(EventBase):
     event_id: int
+    event_name: str
+    performer: str
+    event_date: date
+    venue_id: int
+    status: str
     organizer_id: int
 
     class Config:
         from_attributes = True 
+        #orm_mode = True
 
 class VenueBase(BaseModel):
     venue_name: str

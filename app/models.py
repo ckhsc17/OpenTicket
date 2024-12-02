@@ -38,7 +38,7 @@ class Event(Base):
     performer = Column(String(50), nullable=False)
     event_date = Column(Date, nullable=False)
     venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="SET NULL"))
-    description = Column(String)
+    #description = Column(String) 未來可加入活動描述
     status = Column(String(20), default="Scheduled")
 
     organizer = relationship("User", back_populates="events")

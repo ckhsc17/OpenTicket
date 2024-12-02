@@ -65,11 +65,12 @@ def delete_user(db: Session, user_id: int) -> bool:
 def create_event(db: Session, event: EventCreate, organizer_id: int) -> Event:
     db_event = Event(
         organizer_id=organizer_id,
+        event_id=event.event_id,
         event_name=event.event_name,
         performer=event.performer,
         event_date=event.event_date,
         venue_id=event.venue_id,
-        description=event.description,
+        #description=event.description, 未來可加入活動描述
         status=event.status
     )
     db.add(db_event)
