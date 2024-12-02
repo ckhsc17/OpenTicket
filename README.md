@@ -30,7 +30,13 @@ Ctrl+Shift+P（或 Cmd+Shift+P）並選擇 Python: Restart Language Server。
 python: 3.11版(3.9也行)，各種package才能順利運行
 
 '''
-pip install fastapi uvicorn supabase-py sqlalchemy alembic python-dotenv supabase
-pip install bcrypt
-pip install passlib[bcrypt] python-jose
+pip3 install fastapi uvicorn supabase-py sqlalchemy alembic python-dotenv supabase
+pip3 install bcrypt
+pip3 install passlib[bcrypt] python-jose
 '''
+
+## Update Log
+---
+> ### 2024/12/02.a
+> Add codes to events.py, some functions to crud.py to deal with event operation (yet to debug)
+> Add data generation codes (users, venues, events) and update in supabase
