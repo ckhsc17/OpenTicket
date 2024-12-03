@@ -4,7 +4,7 @@ models.py 模組包含了應用中的數據模型，使用 SQLAlchemy ORM 定義
 """
 
 import enum
-from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Date, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Date, DateTime, Enum, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 from app.database_connection import Base
 
@@ -58,11 +58,11 @@ class Venue(Base):
 
 class Seat(Base):
     __tablename__ = "seats"
-    seat_id = Column(Integer, primary_key=True, index=True)
-    venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="CASCADE"))
+    #seat_id = Column(Integer, primary_key=True, index=True)
+    venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="CASCADE"), primary_key=True)
     section = Column(String(20))
     row = Column(String(5))
-    seat_number = Column(String(5), unique=True)
+    seat_number = Column(String(5), primary_key=True)
     seat_type = Column(String(20))
 
     venue = relationship("Venue", back_populates="seats")
@@ -72,13 +72,24 @@ class Ticket(Base):
     __tablename__ = "tickets"
     ticket_id = Column(Integer, primary_key=True, index=True)
     event_id = Column(Integer, ForeignKey("events.event_id", ondelete="CASCADE"))
-    seat_id = Column(Integer, ForeignKey("seats.seat_id", ondelete="SET NULL"))
+    #seat_id = Column(Integer, ForeignKey("seats.seat_id", ondelete="SET NULL"))
     price = Column(DECIMAL(10, 2), nullable=False)
     status = Column(String(20), default="Available")
     order_id = Column(Integer, ForeignKey('orders.order_id')) 
+    venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="SET NULL"))
+    seat_number = Column(String(5))
+
+    # 定義複合外鍵
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['venue_id', 'seat_number'],
+            ['seats.venue_id', 'seats.seat_number'],
+            ondelete="SET NULL"
+        ),
+    )
 
     event = relationship("Event", back_populates="tickets")
-    seat = relationship("Seat", back_populates="ticket")
+    seat = relationship("Seat", back_populates="ticket", uselist=False) #uselist=False表示一對一關係
     order = relationship("Order", back_populates="tickets")
 
 class OrderStatus(str, enum.Enum):
