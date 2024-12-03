@@ -46,3 +46,8 @@ pip3 install passlib[bcrypt] python-jose
 
 > ### 2024/12/02.c
 > Finish the fake data which satisfy that "every ticket is belong to an order"
+
+> ### 2024/12/03.a
+> Implement the function create_event successfully!
+
+> 
