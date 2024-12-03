@@ -97,13 +97,18 @@ class SeatOut(SeatBase):
         from_attributes = True 
 
 class TicketBase(BaseModel):
+    ticket_id: int
     event_id: int
-    #seat_id: int
+    venue_id: int
+    seat_number: int
     price: float
     status: Optional[str] = "Available"
 
 class TicketCreate(TicketBase):
-    pass
+    event_id: int
+    seat_number: int
+    price: float
+    status: Optional[str] = "Available"
 
 class TicketOut(TicketBase):
     ticket_id: int

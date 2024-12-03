@@ -53,6 +53,12 @@ def get_designated_seats(event_id: int, seat_number: int, db: Session = Depends(
 def get_tickets_by_user(user_id: int, db: Session = Depends(get_db)):
     tickets = db.query(Ticket).join(Order).filter(Order.user_id == user_id).all()
     return tickets
+
+# Search for sold tickets by event
+@router.get("/events/{event_id}/sold_tickets", tags=["Tickets"])
+def get_sold_tickets(event_id: int, db: Session = Depends(get_db)):
+    tickets = db.query(Ticket).filter(Ticket.event_id == event_id).all()
+    return tickets
 '''
 @router.post("/tickets", tags=["Tickets"])
 def select_ticket(event_id: int, seat_number: int, db: Session = Depends(get_db)):

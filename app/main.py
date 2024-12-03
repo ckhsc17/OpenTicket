@@ -8,7 +8,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 # 從 app.routers 導入各個模組的路由
-from app.routers import auth, users, events, tickets, orders, payments
+from app.routers import auth, users, events, tickets, orders, payments, seats
 from app.database_connection import get_db
 
 
@@ -59,6 +59,8 @@ app.include_router(auth.router) # 將 auth.py 中的 router 加入到 app 中
 app.include_router(events.router) # 將 events.py 中的 router 加入到 app 中
 app.include_router(tickets.router) # 將 tickets.py 中的 router 加入到 app 中
 app.include_router(orders.router) # 將 orders.py 中的 router 加入到 app 中
+app.include_router(seats.router) # 將 seats.py 中的 router 加入到 app 中
+app.include_router(payments.router) # 將 payments.py 中的 router 加入到 app 中
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="localhost", port=8000, reload=True)
