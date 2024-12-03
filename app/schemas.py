@@ -117,7 +117,10 @@ class OrderBase(BaseModel):
     status: Optional[str] = "Pending"
 
 class OrderCreate(OrderBase):
-    pass
+    user_id: int
+    total_amount: float
+    order_date: datetime = datetime.now()
+    status: Optional[str] = "Pending"
 
 class OrderOut(OrderBase):
     order_id: int

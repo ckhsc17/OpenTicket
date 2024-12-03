@@ -32,7 +32,7 @@ class EventStatus(str, enum.Enum):
 
 class Event(Base):
     __tablename__ = "events"
-    event_id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     organizer_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"))
     event_name = Column(String(100), nullable=False)
     performer = Column(String(50), nullable=False)
@@ -70,7 +70,7 @@ class Seat(Base):
 
 class Ticket(Base):
     __tablename__ = "tickets"
-    ticket_id = Column(Integer, primary_key=True, index=True)
+    ticket_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     event_id = Column(Integer, ForeignKey("events.event_id", ondelete="CASCADE"))
     #seat_id = Column(Integer, ForeignKey("seats.seat_id", ondelete="SET NULL"))
     price = Column(DECIMAL(10, 2), nullable=False)
@@ -99,7 +99,7 @@ class OrderStatus(str, enum.Enum):
 
 class Order(Base):
     __tablename__ = "orders"
-    order_id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"))
     total_amount = Column(DECIMAL(10, 2), nullable=False)
     order_date = Column(DateTime, server_default="CURRENT_TIMESTAMP")
