@@ -50,4 +50,5 @@ pip3 install passlib[bcrypt] python-jose
 > ### 2024/12/03.a
 > Implement the function create_event successfully!
 
-> 
+> ### 2024/12/03.b
+> Implement the function of searching for seats in tickets.py
