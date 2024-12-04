@@ -25,7 +25,8 @@ def create_user(db: Session, user: UserCreate) -> User:
         email=user.email,
         password=hashed_password,
         phone=user.phone,
-        role=user.role
+        role=user.role,
+        created_at=user.created_at
     )
     db.add(db_user)
     db.commit() 
@@ -207,10 +208,12 @@ def delete_seat(db: Session, seat_id: int) -> bool:
 
 # --- 票券 CRUD 操作 ---
 
-def create_ticket(db: Session, ticket: TicketCreate) -> Ticket:
+def create_ticket(db: Session, ticket: TicketCreate, venue_id: int, order_id: int) -> Ticket:
     db_ticket = Ticket(
         event_id=ticket.event_id,
-        seat_id=ticket.seat_id,
+        order_id=order_id,
+        venue_id=venue_id, 
+        seat_number=ticket.seat_number,
         price=ticket.price,
         status=ticket.status
     )
@@ -250,11 +253,12 @@ def delete_ticket(db: Session, ticket_id: int) -> bool:
 
 # --- 訂單 CRUD 操作 ---
 
-def create_order(db: Session, order: OrderCreate) -> Order:
+def create_order(db: Session, order: OrderCreate, user_id: int) -> Order:
     db_order = Order(
-        user_id=order.user_id,
+        user_id=user_id,
         total_amount=order.total_amount,
-        status=order.status
+        status=order.status,
+        order_date=order.order_date
     )
     db.add(db_order)
     db.commit()

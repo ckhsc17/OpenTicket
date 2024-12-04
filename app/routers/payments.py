@@ -4,7 +4,7 @@ from app.models import Event, Seat, Ticket, Order, Payment
 from app.dependencies import user_dependency, db_dependency
 #from app.routers.auth import SECRET_KEY, ALGORITHM  # 导入 SECRET_KEY 和 ALGORITHM
 from app.crud import get_user, get_user_by_email
-from app.crud import get_event, get_events, create_event, join_event, leave_event
+from app.crud import create_payment
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
 from passlib.context import CryptContext
@@ -26,3 +26,19 @@ def get_payments_by_order(order_id: int, db: Session = Depends(get_db)):
     if not payments:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payments not found")
     return payments
+
+@router.get("/payments", response_model=List[PaymentOut], tags=["Payments"])
+def pay(status: bool, current_user: user_dependency, payment: PaymentCreate, db: Session = Depends(get_db)):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    #create_payment
+    payment.u
+    payment = create_payment(db, payment)
+    if (status):
+        payment = Payment(user_id=current_user.user_id, order_id=1, payment_date=datetime.now())
+        db.add(payment)
+        db.commit()
+        db.refresh(payment)
+        return payment
+
+    

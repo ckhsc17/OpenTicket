@@ -35,7 +35,7 @@ def get_available_seats(event_id: int, db: Session = Depends(get_db)):
     return seats
 
 #情境：使用者選擇座位，查看座位類型、是否有人
-@router.get("/events/{event_id}/seats", tags=["Tickets"])
+@router.get("/events/{event_id}/designated_seats", tags=["Tickets"])
 def get_designated_seats(event_id: int, seat_number: int, db: Session = Depends(get_db)):
     event = db.query(Event).filter(Event.event_id == event_id).first()
     if not event:
@@ -44,21 +44,24 @@ def get_designated_seats(event_id: int, seat_number: int, db: Session = Depends(
     seats = db.query(Seat).filter(
         Seat.venue_id == event.venue_id,
         Seat.seat_number == seat_number,
-    ).all()
+    ).first()
     
     return seats
-
+'''
 # Get a user's ticket
 @router.get("/tickets/{user_id}", tags=["Tickets"])
 def get_tickets_by_user(user_id: int, db: Session = Depends(get_db)):
     tickets = db.query(Ticket).join(Order).filter(Order.user_id == user_id).all()
     return tickets
-
+'''
 # Search for sold tickets by event
 @router.get("/events/{event_id}/sold_tickets", tags=["Tickets"])
 def get_sold_tickets(event_id: int, db: Session = Depends(get_db)):
     tickets = db.query(Ticket).filter(Ticket.event_id == event_id).all()
     return tickets
+
+
+
 '''
 @router.post("/tickets", tags=["Tickets"])
 def select_ticket(event_id: int, seat_number: int, db: Session = Depends(get_db)):

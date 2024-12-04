@@ -72,7 +72,6 @@ class Ticket(Base):
     __tablename__ = "tickets"
     ticket_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     event_id = Column(Integer, ForeignKey("events.event_id", ondelete="CASCADE"))
-    #seat_id = Column(Integer, ForeignKey("seats.seat_id", ondelete="SET NULL"))
     price = Column(DECIMAL(10, 2), nullable=False)
     status = Column(String(20), default="Available")
     order_id = Column(Integer, ForeignKey('orders.order_id')) 

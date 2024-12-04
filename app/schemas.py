@@ -15,6 +15,7 @@ class UserBase(BaseModel):
     phone: Optional[constr(max_length=20)] = None
 
 class UserCreate(UserBase):
+    created_at: datetime = datetime.now()
     password: constr(min_length=6)
     role: UserRole
 
@@ -97,18 +98,19 @@ class SeatOut(SeatBase):
         from_attributes = True 
 
 class TicketBase(BaseModel):
-    ticket_id: int
+    #ticket_id: int
     event_id: int
-    venue_id: int
+    #venue_id: int
     seat_number: int
     price: float
-    status: Optional[str] = "Available"
+    status: Optional[str] = "Adult"
 
 class TicketCreate(TicketBase):
     event_id: int
+    #venue_id: int
     seat_number: int
-    price: float
-    status: Optional[str] = "Available"
+    price: float #先手動加入，之後會自動生成對應座位價格
+    status: Optional[str] = "Adult"
 
 class TicketOut(TicketBase):
     ticket_id: int
@@ -117,13 +119,13 @@ class TicketOut(TicketBase):
         from_attributes = True 
 
 class OrderBase(BaseModel):
-    user_id: int
+    #user_id: int
     total_amount: float
     status: Optional[str] = "Pending"
 
 class OrderCreate(OrderBase):
-    user_id: int
-    total_amount: float
+    #user_id: int
+    total_amount: float #先手動加入，之後會根據所選位子、張數自動計算價格
     order_date: datetime = datetime.now()
     status: Optional[str] = "Pending"
 
@@ -141,7 +143,10 @@ class PaymentBase(BaseModel):
     status: Optional[str] = "Completed"
 
 class PaymentCreate(PaymentBase):
-    pass
+    order_id: int
+    amount: float
+    method: str
+    status: Optional[str] = "Completed"
 
 class PaymentOut(PaymentBase):
     payment_id: int
