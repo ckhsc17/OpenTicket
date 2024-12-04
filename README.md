@@ -59,3 +59,7 @@ pip3 install passlib[bcrypt] python-jose
 > ### 2024/12/03.d
 > Implement the function of searching for orders in payment.py, seats.py.
 > Add the function of who is currently login
+
+> ### 2024/12/05.a
+> Implement the function of creating order and ticket after user selects a seat
+> Fix some schema issues for users, tickets and orders
