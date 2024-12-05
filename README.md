@@ -26,6 +26,11 @@ Ctrl+Shift+P（或 Cmd+Shift+P）並選擇 Python: Restart Language Server。
 **Client**
 > sudo npm run dev
 
+**MUI**
+> npm install react@18 react-dom@18
+> npm install @mui/material @emotion/react @emotion/styled
+> npm install @fontsource/roboto
+
 ## 
 python: 3.11版(3.9也行)，各種package才能順利運行
 
