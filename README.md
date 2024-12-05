@@ -72,3 +72,6 @@ pip3 install passlib[bcrypt] python-jose
 
 > ### 2024/12/05.b
 > Fix data generation
+
+> ### 2024/12/06.a
+> Do some basic setup for frontend
