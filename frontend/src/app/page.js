@@ -1,10 +1,13 @@
 //待修改
 "use client";
 
-import { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import AuthContext from './context/AuthContext';
+
 import ProtectedRoute from './components/ProtectedRoute';
 import axios from 'axios';
+
+import Icon from '@mui/material/Icon';
 
 const Home = () => {
   const { user, logout } = useContext(AuthContext);
@@ -80,6 +83,9 @@ const Home = () => {
     <ProtectedRoute>
       <div className="container">
         <h1>Welcome!</h1>
+        
+
+        <Icon>star</Icon> {/*  // star icon */}
         <button onClick={logout} className="btn btn-danger">Logout</button>
 
         <div className="accordion mt-5 mb-5" id="accordionExample">
