@@ -1,22 +1,22 @@
-from typing import Annotated
+import os
+from typing import Annotated, Optional
+from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
+
+from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+from pydantic import BaseModel
+
+from jose import JWTError, jwt
+
 from app.schemas import UserCreate, UserOut
 from app.models import User
 from app.crud import create_user, get_user_by_email, get_user
-from sqlalchemy.orm import Session
 from app.database_connection import get_db
-from passlib.context import CryptContext
-from datetime import datetime, timedelta, timezone
-from jose import JWTError, jwt
-from typing import Optional
-import os
-from dotenv import load_dotenv
-from pydantic import BaseModel
-from fastapi.security import OAuth2PasswordBearer
-#from app.dependencies import db_dependency
-
-#oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # This will look for the token in the 'Authorization' header
 
 load_dotenv() # 載入 .env 檔案
 
@@ -48,6 +48,7 @@ def authenticate_user(email: str, password: str, db: Session = Depends(get_db)):
     if not verify_password(password, user.password):
         return False
     return user
+
 # 這個token 會在登入成功後回傳給前端，前端在每次發送請求時都要帶著這個token，而加密的方式是用jwt
 def create_access_token(username: str, user_id: int, expires_delta: timedelta):
     encode = {'sub': username, 'id': user_id}
@@ -58,40 +59,7 @@ def create_access_token(username: str, user_id: int, expires_delta: timedelta):
 def check_organizer_role(user: User):
     if user.role != "Organizer":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only organizers can perform this action")
-'''
-async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    print("hi from get_current_user function call")
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        print("payload", payload)
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token is invalid",
-            )
-        user = get_user(db, user_id)
-        print("hi from get_current_user")
-        if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User not found",
-            )
-        return user
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is invalid",
-        )
-'''
-''' 
-def test(token: str = Depends(oauth2_scheme)):
-    print("Received Token:", token)  # 這會顯示從 Authorization 標頭中提取的 token
-    # 以下是處理 token 的邏輯
-    if not token:
-        raise HTTPException(status_code=401, detail="Token is missing")
-    # 這裡可以繼續解碼 token 或其他處理
-''' 
+
 @router.post("/register", response_model=UserOut, tags=["Authentication"])
 def register(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = get_user_by_email(db, user.email)
