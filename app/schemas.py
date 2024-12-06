@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from pydantic.types import constr
 from typing import Optional, List
 from datetime import date, datetime
@@ -10,13 +10,13 @@ class UserRole(str, enum.Enum):
     Admin = "Admin"
 
 class UserBase(BaseModel):
-    username: constr(min_length=3, max_length=50)
+    username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    phone: Optional[constr(max_length=20)] = None
+    phone: Optional[str] = Field(None, max_length=20)
 
 class UserCreate(UserBase):
     created_at: datetime = datetime.now()
-    password: constr(min_length=6)
+    password: str = Field(..., min_length=6)
     role: UserRole
 
 #看你有哪些屬性需要在輸出時顯示
@@ -43,8 +43,8 @@ class EventBase(BaseModel):
 # 參考 UserCreate 的寫法，定義 EventCreate
 class EventCreate(EventBase):
     #event_id: int #先手動加入，之後會自動生成
-    event_name: constr(min_length=1, max_length=100)
-    performer: constr(min_length=1, max_length=50)
+    event_name: str = Field(..., min_length=1, max_length=100)
+    performer: str = Field(..., min_length=1, max_length=50)
     venue_id: int
     event_date: date
     status: Optional[str] = "Scheduled"
