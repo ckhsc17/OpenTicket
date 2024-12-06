@@ -20,7 +20,6 @@ def get_password_hash(password):
 def create_user(db: Session, user: UserCreate) -> User:
     hashed_password = get_password_hash(user.password)
     db_user = User(
-
         username=user.username,
         email=user.email,
         password=hashed_password,
@@ -41,12 +40,15 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
 
 def update_user(db: Session, user_id: int, user_update: UserCreate) -> Optional[User]:
     user = db.query(User).filter(User.user_id == user_id).first()
+
     if not user:
         return None
+
     user.username = user_update.username
     user.email = user_update.email
     user.phone = user_update.phone
     user.role = user_update.role
+
     if user_update.password:
         user.password = get_password_hash(user_update.password)
     db.commit()
@@ -55,10 +57,13 @@ def update_user(db: Session, user_id: int, user_update: UserCreate) -> Optional[
 
 def delete_user(db: Session, user_id: int) -> bool:
     user = db.query(User).filter(User.user_id == user_id).first()
+    
     if not user:
         return False
+    
     db.delete(user)
     db.commit()
+
     return True
 
 # --- 活動 CRUD 操作 ---
@@ -98,14 +103,17 @@ def update_event(db: Session, event_id: int, event_update: EventCreate) -> Optio
     event = db.query(Event).filter(Event.event_id == event_id).first()
     if not event:
         return None
+    
     event.event_name = event_update.event_name
     event.performer = event_update.performer
     event.event_date = event_update.event_date
     event.venue_id = event_update.venue_id
     event.description = event_update.description
     event.status = event_update.status
+    
     db.commit()
     db.refresh(event)
+    
     return event
 
 def leave_event(db: Session, event_id: int, user_id: int):
