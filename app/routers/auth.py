@@ -108,7 +108,10 @@ def login(credentials: Login, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.user_id)}, expires_delta=access_token_expires
+        #data={"sub": str(user.user_id)}, expires_delta=access_token_expires
+        username=user.username,
+        user_id=user.user_id,
+        expires_delta=access_token_expires
     )
     #oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # This will look for the token in the 'Authorization' header
     print("hi login2")

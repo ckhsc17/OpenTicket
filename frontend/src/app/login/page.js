@@ -19,7 +19,7 @@ const Login = () => {
     const handleRegister = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post('http://localhost:8000/auth', {
+        const response = await axios.post('http://localhost:8000/auth/login', {
           username: registerUsername,
           password: registerPassword,
         });
