@@ -27,6 +27,17 @@ def get_payments_by_order(order_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payments not found")
     return payments
 
+# Get payments by user
+@router.get("/payments/user/{user_id}", response_model=List[PaymentOut], tags=["Payments"])
+def get_payments_by_user(user_id: int, db: Session = Depends(get_db)):
+    orders = db.query(Order).filter(Order.user_id == user_id).all()
+    payments = []
+    for order in orders:
+        payments += db.query(Payment).filter(Payment.order_id == order.order_id).all()
+    if not payments:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payments not found")
+    return payments
+
 @router.get("/payments", response_model=List[PaymentOut], tags=["Payments"])
 def pay(status: bool, current_user: user_dependency, payment: PaymentCreate, db: Session = Depends(get_db)):
     if not current_user:
@@ -40,5 +51,3 @@ def pay(status: bool, current_user: user_dependency, payment: PaymentCreate, db:
         db.commit()
         db.refresh(payment)
         return payment
-
-    

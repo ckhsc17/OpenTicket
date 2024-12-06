@@ -35,7 +35,7 @@ class EventBase(BaseModel):
     performer: str
     event_date: date
     venue_id: int
-    #description: Optional[str] = None 
+    description: Optional[str] = None 
     status: Optional[str] = "Scheduled"
 
     

@@ -64,6 +64,7 @@ class Seat(Base):
     row = Column(String(5))
     seat_number = Column(String(5), primary_key=True)
     seat_type = Column(String(20))
+    type = Column(String(20))
 
     venue = relationship("Venue", back_populates="seats")
     ticket = relationship("Ticket", back_populates="seat", uselist=False)
@@ -73,7 +74,7 @@ class Ticket(Base):
     ticket_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     event_id = Column(Integer, ForeignKey("events.event_id", ondelete="CASCADE"))
     price = Column(DECIMAL(10, 2), nullable=False)
-    status = Column(String(20), default="Available")
+    type = Column(String(20), default="Available")
     order_id = Column(Integer, ForeignKey('orders.order_id')) 
     venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="SET NULL"))
     seat_number = Column(String(5))
