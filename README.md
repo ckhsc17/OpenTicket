@@ -96,3 +96,6 @@ pip3 install passlib[bcrypt] python-jose
 ### 2024/12/06.b
 
 > Fix schema and data generation
+
+### 2024/12/06.c
+> Fix login bug
