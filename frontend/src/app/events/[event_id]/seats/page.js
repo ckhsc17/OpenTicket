@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Typography, Button, Box, Select, MenuItem } from '@mui/material';
 import "../../../globals.css";
+import AuthContext from "../../../context/AuthContext";
 
 export default function EventDetailsPage() {
   const router = useRouter();
+  //const searchParams = useSearchParams();
   const { event_id } = useParams();
   const [seats, setSeats] = useState([]);
   const [selectedSection, setSelectedSection] = useState("Section-1"); // 預設選中的 Section
@@ -14,9 +16,21 @@ export default function EventDetailsPage() {
   const [lockTimers, setLockTimers] = useState({}); // 記錄每個座位的計時器
   const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState(null);
+  const [id, setId] = useState(null);
 
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const id = localStorage.getItem('user_id');
+    console.log("id: ", id);
+    console.log("token: ", token);
+    if (!token) {
+      // 如果未登入，跳轉到登入頁面
+      router.push('/login');
+    }
   }, []);
 
   // 請求座位資料
@@ -24,10 +38,17 @@ export default function EventDetailsPage() {
     if (!isClient || !event_id) return;
 
     const storedToken = localStorage.getItem('token');
+    const id = localStorage.getItem('user_id');
+    setId(id);
     setToken(storedToken);
 
     if (!storedToken) {
       console.error("Token is missing");
+      return;
+    }
+
+    if (!id) {
+      console.error("id is missing");
       return;
     }
 
@@ -79,9 +100,10 @@ export default function EventDetailsPage() {
     const selectedSeat = seats.find((seat) => seat.seat_number === seatNumber);
 
     if (!selectedSeat || selectedSeat.status !== "Available") return;
-
+    setSelectedSeats([...selectedSeats, seatNumber]);
     // 更新座位狀態為 Reserved
-    updateSeatStatus(seatNumber, "Reserved");
+    /*待測試
+    updateSeatStatus(seatNumber, "Reserved"); //原本覺得應該在這裡更新reserve進行lock，但是這樣會導致其他人無法選擇這個座位，
     setSelectedSeats([...selectedSeats, seatNumber]);
 
     // 啟動 5 分鐘倒計時
@@ -91,15 +113,60 @@ export default function EventDetailsPage() {
     }, 5 * 60 * 1000);
 
     setLockTimers((prev) => ({ ...prev, [seatNumber]: timer }));
+    */
   };
 
   // 確認選位
   const handleConfirmSeats = async () => {
+    // 檢查選擇的座位是否都處於 Available 狀態
+    const unavailableSeats = selectedSeats.filter((seatNumber) => {
+      const selectedSeat = seats.find((seat) => seat.seat_number === seatNumber);
+      return selectedSeat && selectedSeat.status !== "Available";
+    });
+  
+    // 如果有座位不是 Available，顯示錯誤訊息並退出
+    if (unavailableSeats.length > 0) {
+      alert(`以下座位已經被選擇，請重新選擇: ${unavailableSeats.join(", ")}`);
+      return;
+    }
+  
     // 清理計時器
     selectedSeats.forEach((seatNumber) => clearTimeout(lockTimers[seatNumber]));
-
-    // 傳遞到付款頁面
-    router.push(`/payment?event_id=${event_id}&seat_numbers=${selectedSeats.join(",")}`);
+  
+    // 準備訂單資料
+    const orderData = {
+      user_id: 1, //localStorage.getItem('user_id'), // 假設使用者 ID
+      total_amount: selectedSeats.length * 500, // 假設每個座位 500 單位的價格，這邊可以根據實際需求來計算
+      order_date: new Date().toISOString(), // 訂單日期
+      status: "Pending", // 訂單狀態
+      //seat_numbers: selectedSeats.join(", "), // 所有選擇的座位號
+    };
+  
+    try {
+      const response = await fetch("http://localhost:8000/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+        
+      });
+      console.log("orderData: ", orderData);
+  
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
+  
+      const data = await response.json();
+      console.log("Order created successfully:", data);
+  
+      // 跳轉到付款頁面
+      router.push(`/payment?event_id=${event_id}&seat_numbers=${selectedSeats.join(", ")}`);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      alert("創建訂單時發生錯誤，請稍後再試！");
+    }
   };
 
   // 根據狀態渲染顏色
@@ -118,6 +185,7 @@ export default function EventDetailsPage() {
 
   // 過濾當前 Section 的座位
   const filteredSeats = seats.filter((seat) => seat.section === selectedSection);
+  console.log("Filtered Seats:", filteredSeats);
 
   return (
     <Box p={4} className="min-h-screen bg-gray-100">
@@ -142,12 +210,13 @@ export default function EventDetailsPage() {
         gap={1}
         style={{ maxWidth: "600px", margin: "auto" }}
       >
+        
         {filteredSeats.map((seat) => (
           <Box
             key={`${seat.row}-${seat.seat_number}`}
             sx={{
-              width: "40px",
-              height: "40px",
+              width: "20px",
+              height: "20px",
               backgroundColor: getSeatColor(seat.status),
               border: selectedSeats.includes(seat.seat_number) ? "2px solid blue" : "1px solid black",
               cursor: seat.status === "Available" ? "pointer" : "not-allowed",

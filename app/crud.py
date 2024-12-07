@@ -261,9 +261,9 @@ def delete_ticket(db: Session, ticket_id: int) -> bool:
 
 # --- 訂單 CRUD 操作 ---
 
-def create_order(db: Session, order: OrderCreate, user_id: int) -> Order:
+def create_order(db: Session, order: OrderCreate) -> Order:
     db_order = Order(
-        user_id=user_id,
+        user_id=order.user_id,
         total_amount=order.total_amount,
         status=order.status,
         order_date=order.order_date

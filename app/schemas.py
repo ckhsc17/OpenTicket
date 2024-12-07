@@ -86,6 +86,7 @@ class SeatBase(BaseModel):
     row: Optional[str] = None
     seat_number: str
     seat_type: Optional[str] = "Regular"
+    status: Optional[str] = "Available"
 
 class SeatCreate(SeatBase):
     pass
@@ -123,7 +124,7 @@ class OrderBase(BaseModel):
     status: Optional[str] = "Pending"
 
 class OrderCreate(OrderBase):
-    #user_id: int
+    user_id: int
     total_amount: float #先手動加入，之後會根據所選位子、張數自動計算價格
     order_date: datetime = datetime.now()
     status: Optional[str] = "Pending"
