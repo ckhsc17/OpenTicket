@@ -8,4 +8,6 @@ node_modules/*
 venv/
 .DS_Store
 *.csv
-
+nextjs
+frontend/supabase-nextjs
+supabase-nextjs
