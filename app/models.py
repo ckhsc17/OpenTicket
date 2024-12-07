@@ -9,9 +9,9 @@ from sqlalchemy.orm import relationship
 from app.database_connection import Base
 
 class UserRole(str, enum.Enum):
-    User = "User"
-    Organizer = "Organizer"
-    Admin = "Admin"
+    user = "User"
+    organizer = "Organizer"
+    admin = "Admin"
 
 class User(Base):
     __tablename__ = "users"
