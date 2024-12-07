@@ -1,22 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.schemas import EventCreate, EventOut, UserOut
-from app.models import User
+from app.schemas import EventCreate, EventOut
 from app.dependencies import user_dependency, db_dependency
-#from app.routers.auth import SECRET_KEY, ALGORITHM  # 导入 SECRET_KEY 和 ALGORITHM
-from app.crud import get_user, get_user_by_email
 from app.crud import get_event, get_events, create_event, join_event, leave_event
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
-from passlib.context import CryptContext
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from typing import Optional
-import os
 from dotenv import load_dotenv
-from pydantic import BaseModel
 from typing import List
-from fastapi.security import OAuth2PasswordBearer
-
 
 load_dotenv() # 載入 .env 檔案
 
