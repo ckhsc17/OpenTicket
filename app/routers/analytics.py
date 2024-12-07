@@ -29,15 +29,19 @@ def get_event_analysis(event_id: int, db: Session = Depends(get_db)):
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     
-    venue_name = db.query(Venue).filter(Venue.venue_id == event.venue_id).first().venue_name
+    venue = db.query(Venue).filter(Venue.venue_id == event.venue_id).first()
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+    
+    venue_name = str(venue.venue_name)
 
     return EventAnalytics(
         event_id=event_id,
-        event_name=event.event_name,
-        performer=event.performer,
+        event_name=str(event.event_name),
+        performer=str(event.performer),
         event_date=event.event_date.strftime("%Y-%m-%d"),
-        venue_id=event.venue_id,
-        description=event.description,
+        venue_id=event.venue_id, # type: ignore
+        description=str(event.description),
         total_sales=float(total_sales),
         total_seats=total_seats,
         utilized_seats=utilized_seats,
@@ -64,22 +68,25 @@ def get_organizer_analysis(organizer_id: int, db: Session = Depends(get_db)):
 
         total_participants = db.query(Order).join(Ticket).filter(Ticket.event_id == event.event_id).distinct(Order.user_id).count()
 
-        venue_name = db.query(Venue).filter(Venue.venue_id == event.venue_id).first().venue_name
+        venue = db.query(Venue).filter(Venue.venue_id == event.venue_id).first()
+        if not venue:
+            raise HTTPException(status_code=404, detail="Venue not found")
+        venue_name = str(venue.venue_name)
 
         analytics.append(
             EventAnalytics(
-                event_id=event.event_id,
-                event_name=event.event_name,
-                performer=event.performer,
-                description=event.description,
+                event_id=event.event_id, # type: ignore
+                event_name=str(event.event_name),
+                performer=str(event.performer),
+                description=str(event.description),
                 event_date=event.event_date.strftime("%Y-%m-%d"),
-                venue_id=event.venue_id,
+                venue_id=event.venue_id, # type: ignore
                 total_sales=float(total_sales),
                 total_seats=total_seats,
                 utilized_seats=utilized_seats,
                 seat_utilization=round(seat_utilization, 2),
                 total_participants=total_participants,
-                venue=venue_name
+                venue=str(venue_name)
             )
         )
 
