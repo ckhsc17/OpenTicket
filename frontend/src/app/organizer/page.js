@@ -14,6 +14,7 @@ import {
     Modal,
     Divider,
     Paper,
+    TextField,
     Table,
     TableBody,
     TableCell,
@@ -27,10 +28,10 @@ export default function OrganizerEventListPage() {
     const router = useRouter();
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [editingEvent, setEditingEvent] = useState(null); // 編輯中的活動
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [recentOrders, setRecentOrders] = useState([]);
+    const [recentOrders, setRecentOrders] = useState([]); // 最近訂單
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -42,45 +43,66 @@ export default function OrganizerEventListPage() {
 
             try {
                 setLoading(true);
-                const response = await axios.get(`http://localhost:8000/analysis/organizer/6540`, {
+                const eventResponse = await axios.get(`http://localhost:8000/analysis/organizer/6540`, {
                     headers: {
                         Authorization: `Bearer ${storedToken}`,
                     },
                 });
+                setEvents(eventResponse.data);
 
-                setEvents(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching events:', error);
-                setError('Failed to fetch events. Please try again later.');
-                setLoading(false);
-            }
-        };
-
-        const fetchRecentOrders = async () => {
-            const storedToken = localStorage.getItem('token');
-            if (!storedToken) {
-                router.push('/login');
-                return;
-            }
-
-            try {
-                const response = await axios.get(`http://localhost:8000/analysis/orders/recent/6540`, {
+                const orderResponse = await axios.get(`http://localhost:8000/analysis/orders/recent/6540`, {
                     headers: {
                         Authorization: `Bearer ${storedToken}`,
                     },
                 });
+                setRecentOrders(orderResponse.data);
 
-                setRecentOrders(response.data);
+                setLoading(false);
             } catch (error) {
-                console.error('Error fetching recent orders:', error);
-                setError('Failed to fetch recent orders. Please try again later.');
+                console.error('Error fetching data:', error);
+                setError('Failed to fetch data. Please try again later.');
+                setLoading(false);
             }
         };
 
         fetchEvents();
-        fetchRecentOrders();
     }, [router]);
+
+    const handleEditButtonClick = (event) => {
+        setEditingEvent({ ...event }); // 克隆活動數據
+    };
+
+    const handleSaveEdit = async () => {
+        const storedToken = localStorage.getItem('token');
+        if (!storedToken) {
+            router.push('/login');
+            return;
+        }
+
+        try {
+            await axios.put(`http://localhost:8000/events/${editingEvent.event_id}`, editingEvent, {
+                headers: {
+                    Authorization: `Bearer ${storedToken}`,
+                },
+            });
+
+            // 更新事件列表
+            setEvents((prevEvents) =>
+                prevEvents.map((event) =>
+                    event.event_id === editingEvent.event_id ? { ...editingEvent } : event
+                )
+            );
+
+            setEditingEvent(null); // 關閉編輯模式
+        } catch (error) {
+            console.error('Error saving edited event:', error);
+            setError('Failed to update event. Please try again later.');
+        }
+    };
+
+    const handleEditChange = (field, value) => {
+        setEditingEvent((prev) => ({ ...prev, [field]: value }));
+    };
 
     if (loading) {
         return (
@@ -120,14 +142,9 @@ export default function OrganizerEventListPage() {
                                 boxShadow: 4,
                                 borderRadius: 3,
                                 overflow: 'hidden',
-                                cursor: 'pointer',
                                 background: 'linear-gradient(135deg, #f3f4f6, #ffffff)',
                                 transition: 'transform 0.3s, box-shadow 0.3s',
                                 '&:hover': { transform: 'scale(1.05)', boxShadow: 6 },
-                            }}
-                            onClick={() => {
-                                setSelectedEvent(event);
-                                setModalOpen(true);
                             }}
                         >
                             <CardContent>
@@ -140,6 +157,13 @@ export default function OrganizerEventListPage() {
                                 <Typography variant="body2" sx={{ mt: 1, color: '#555' }}>
                                     <strong>地點:</strong> {event.venue}
                                 </Typography>
+                                <Button
+                                    variant="outlined"
+                                    sx={{ mt: 2 }}
+                                    onClick={() => handleEditButtonClick(event)}
+                                >
+                                    編輯
+                                </Button>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -174,10 +198,10 @@ export default function OrganizerEventListPage() {
             </TableContainer>
 
             <Modal
-                open={modalOpen}
-                onClose={() => setModalOpen(false)}
-                aria-labelledby="event-analysis-modal-title"
-                aria-describedby="event-analysis-modal-description"
+                open={!!editingEvent}
+                onClose={() => setEditingEvent(null)}
+                aria-labelledby="edit-event-modal-title"
+                aria-describedby="edit-event-modal-description"
             >
                 <Paper
                     sx={{
@@ -192,33 +216,76 @@ export default function OrganizerEventListPage() {
                         borderRadius: 3,
                     }}
                 >
-                    {selectedEvent ? (
+                    {editingEvent ? (
                         <>
                             <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#1976d2' }}>
-                                活動詳情
+                                編輯活動
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
-                            <Typography variant="body1" sx={{ mb: 1, color: '#333' }}>
-                                <strong>活動名稱:</strong> {selectedEvent.event_name}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
-                                <strong>日期:</strong> {new Date(selectedEvent.event_date).toLocaleDateString()}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
-                                <strong>表演者:</strong> {selectedEvent.performer}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
-                                <strong>描述:</strong> {selectedEvent.description}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
-                                <strong>狀態:</strong> {selectedEvent.status}
-                            </Typography>
+                            <TextField
+                                label="活動名稱"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={editingEvent.event_name}
+                                onChange={(e) => handleEditChange('event_name', e.target.value)}
+                            />
+                            <TextField
+                                label="表演者"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={editingEvent.performer}
+                                onChange={(e) => handleEditChange('performer', e.target.value)}
+                            />
+                            <TextField
+                                label="日期"
+                                type="date"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={editingEvent.event_date}
+                                onChange={(e) => handleEditChange('event_date', e.target.value)}
+                                InputLabelProps={{ shrink: true }}
+                            />
+                            <TextField
+                                label="描述"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                multiline
+                                rows={4}
+                                value={editingEvent.description}
+                                onChange={(e) => handleEditChange('description', e.target.value)}
+                            />
+                            <TextField
+                                label="狀態"
+                                select
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={editingEvent.status}
+                                onChange={(e) => handleEditChange('status', e.target.value)}
+                                SelectProps={{
+                                    native: true,
+                                }}
+                            >
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Canceled">Canceled</option>
+                                <option value="Completed">Completed</option>
+                            </TextField>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{ mr: 2 }}
+                                    onClick={handleSaveEdit}
+                                >
+                                    保存
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => setEditingEvent(null)}
+                                >
+                                    取消
+                                </Button>
+                            </Box>
                         </>
-                    ) : (
-                        <Typography variant="body1" sx={{ color: 'error.main' }}>
-                            無法加載活動數據
-                        </Typography>
-                    )}
+                    ) : null}
                 </Paper>
             </Modal>
         </Box>
