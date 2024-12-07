@@ -4,7 +4,7 @@ from app.models import Event, Seat, Ticket, Order
 from app.dependencies import user_dependency, db_dependency
 #from app.routers.auth import SECRET_KEY, ALGORITHM  # 导入 SECRET_KEY 和 ALGORITHM
 from app.crud import get_user, get_user_by_email
-from app.crud import create_ticket, create_order
+from app.crud import create_tickets, create_order
 from app.routers.tickets import get_designated_seats
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
@@ -56,7 +56,7 @@ def confirm_seat(ticket: TicketCreate, order: OrderCreate, current_user: user_de
     new_order = create_order(db, order, current_user.get('id'))
     #get order_id
     #order_id = db.query(Order).filter(Order.user_id == current_user.user_id).first().order_id
-    ticket = create_ticket(db, ticket, event.venue_id, new_order.order_id)  
+    ticket = create_tickets(db, ticket)  
     #order.user_id = current_user.user_id
     
     

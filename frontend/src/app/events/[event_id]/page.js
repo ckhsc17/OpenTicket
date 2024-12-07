@@ -49,6 +49,7 @@ export default function EventDetailsPage() {
 
         const data = await response.json();
         console.log("part of data: ", data);
+        localStorage.setItem('venue_id', data.venue_id);
         setEventDetails(data);
       } catch (error) {
         console.error('Error fetching event details:', error);

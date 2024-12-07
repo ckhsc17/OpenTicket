@@ -103,14 +103,15 @@ class TicketBase(BaseModel):
     #venue_id: int
     seat_number: int
     price: float
-    status: Optional[str] = "Adult"
+    type: Optional[str] = "Adult"
 
 class TicketCreate(TicketBase):
     event_id: int
-    #venue_id: int
+    venue_id: int
+    order_id: int
     seat_number: int
     price: float #先手動加入，之後會自動生成對應座位價格
-    status: Optional[str] = "Adult"
+    type: Optional[str] = "Adult"
 
 class TicketOut(TicketBase):
     ticket_id: int

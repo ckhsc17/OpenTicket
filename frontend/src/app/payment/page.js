@@ -40,7 +40,7 @@ export default function PaymentPage() {
   // 確認付款
   const handleConfirmPayment = async () => {
     try {
-      const orderData = {
+      const ticketData = {
         event_id,
         seat_numbers,
         total_amount: totalAmount,

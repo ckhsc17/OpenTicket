@@ -51,9 +51,9 @@ def login(credentials: Login, db: Session = Depends(get_db)):
         expires_delta=access_token_expires
     )
     print("access_token", access_token) 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.user_id}
 
-@router.post('/token', response_model=Token, tags=["Authentication"])
+@router.post('/token', tags=["Authentication"])
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
                                  db: Session = Depends(get_db)): 
     user = authenticate_user(form_data.username, form_data.password, db)
@@ -69,8 +69,9 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         user_id=int(user.user_id), # type: ignore 使用 scalar() 方法獲取純量值 
         expires_delta=access_token_expires
     )
+    print("user_id", user.user_id)
     print("access_token", access_token) 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.user_id}
 
 @router.get("/users/me", response_model=UserOut, tags=["Authentication"])
 async def read_users_me(current_user: User = Depends(get_current_user)):

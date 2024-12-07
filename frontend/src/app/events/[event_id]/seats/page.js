@@ -16,16 +16,24 @@ export default function EventDetailsPage() {
   const [lockTimers, setLockTimers] = useState({}); // 記錄每個座位的計時器
   const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState(null);
-  const [id, setId] = useState(null);
+  //const [order_id, setOrderId] = useState(null);
+  var order_id = 0;
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  /*
+  // 確保在狀態更新後輸出
+  useEffect(() => {
+    console.log("Updated Order ID:", order_id);
+  }, [order_id]); // 依賴於 order_id 更新時輸出
+  */
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const id = localStorage.getItem('user_id');
-    console.log("id: ", id);
+    //const id = localStorage.getItem('user_id');
+    //console.log("id: ", id);
     console.log("token: ", token);
     if (!token) {
       // 如果未登入，跳轉到登入頁面
@@ -39,7 +47,7 @@ export default function EventDetailsPage() {
 
     const storedToken = localStorage.getItem('token');
     const id = localStorage.getItem('user_id');
-    setId(id);
+    //setId(id);
     setToken(storedToken);
 
     if (!storedToken) {
@@ -116,7 +124,7 @@ export default function EventDetailsPage() {
     */
   };
 
-  // 確認選位
+  // 確認選位，在這時候才真正的lock座位
   const handleConfirmSeats = async () => {
     // 檢查選擇的座位是否都處於 Available 狀態
     const unavailableSeats = selectedSeats.filter((seatNumber) => {
@@ -135,13 +143,16 @@ export default function EventDetailsPage() {
   
     // 準備訂單資料
     const orderData = {
-      user_id: 1, //localStorage.getItem('user_id'), // 假設使用者 ID
+      user_id: localStorage.getItem('user_id'), // 假設使用者 ID
       total_amount: selectedSeats.length * 500, // 假設每個座位 500 單位的價格，這邊可以根據實際需求來計算
       order_date: new Date().toISOString(), // 訂單日期
       status: "Pending", // 訂單狀態
       //seat_numbers: selectedSeats.join(", "), // 所有選擇的座位號
     };
+
+
   
+    // 創建訂單
     try {
       const response = await fetch("http://localhost:8000/orders", {
         method: "POST",
@@ -159,15 +170,61 @@ export default function EventDetailsPage() {
       }
   
       const data = await response.json();
+      order_id = data.order_id;
       console.log("Order created successfully:", data);
+      //console.log("Order ID:", data.order_id);
+      //setOrderId(data.order_id);
+      console.log("Order ID:", order_id);
   
       // 跳轉到付款頁面
-      router.push(`/payment?event_id=${event_id}&seat_numbers=${selectedSeats.join(", ")}`);
+      //router.push(`/payment?event_id=${event_id}&seat_numbers=${selectedSeats.join(", ")}`);
     } catch (error) {
       console.error("Error creating order:", error);
       alert("創建訂單時發生錯誤，請稍後再試！");
     }
+  
+
+    // 準備票券資料
+    const ticketData = selectedSeats.map((seatNumber) => ({
+      event_id: event_id,
+      venue_id: localStorage.getItem('venue_id'),
+      order_id: order_id, // 這邊使用剛剛創建的訂單 ID
+      seat_number: parseInt(seatNumber),
+      price: selectedSeats.length * 500,
+      type: "Adult" // 假設都是成人票，待修改
+      //user_id: localStorage.getItem('user_id'), 
+    }));
+    console.log("ticketData: ", ticketData);
+
+  // 創建票券
+    try {
+      const response = await fetch("http://localhost:8000/tickets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(ticketData),
+        //mode: 'no-cors'
+        
+      });
+      console.log("ticketData: ", ticketData);
+
+      if (!response.ok) {
+        throw new Error("Failed to create ticket");
+      }
+
+      const data = await response.json();
+      console.log("Ticket created successfully:", data);
+
+      // 跳轉到付款頁面
+      router.push(`/payment?event_id=${event_id}&seat_numbers=${selectedSeats.join(", ")}`);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      alert("創建票券時發生錯誤，請稍後再試！");
+    }
   };
+
 
   // 根據狀態渲染顏色
   const getSeatColor = (status) => {

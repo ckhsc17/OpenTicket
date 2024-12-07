@@ -53,17 +53,17 @@ def get_event_by_id(event_id: int, db: Session = Depends(get_db)):
 
 #oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # This handles token extraction automatically
 
-@router.post("/events", response_model=EventOut, tags=["Events"])
-def create_new_event(db: db_dependency, current_user: user_dependency, event: EventCreate): #, current_user: User = Depends(get_current_user)
+@router.post("/events", tags=["Events"])
+def create_new_event(current_user: user_dependency, event: EventCreate, db: Session = Depends(get_db)): #, current_user: User = Depends(get_current_user)
     print("hi from create_new_event")
     #current_user = get_current_user(db, oauth2_scheme)
     #check_organizer_role(current_user)  # 檢查使用者是否是 organizer 待補
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized")
     print(f"Current User: {current_user}")
-    print(f"Current User id: {current_user.get('user_id')}")
-    print(type(current_user.get('user_id')))
-    new_event = create_event(db, event, current_user.get("id"))
+    print(f"Current User id: ", current_user.user_id)
+    print(type(current_user.user_id))
+    new_event = create_event(db, event, current_user.user_id)
     return new_event
 '''
 async def create_new_event(event: EventCreate, db: Session = Depends(get_db)):

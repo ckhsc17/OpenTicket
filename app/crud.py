@@ -210,19 +210,22 @@ def delete_seat(db: Session, seat_id: int) -> bool:
 
 # --- 票券 CRUD 操作 ---
 
-def create_ticket(db: Session, ticket: TicketCreate, venue_id: int, order_id: int) -> Ticket:
-    db_ticket = Ticket(
-        event_id=ticket.event_id,
-        order_id=order_id,
-        venue_id=venue_id, 
-        seat_number=ticket.seat_number,
-        price=ticket.price,
-        status=ticket.status
-    )
-    db.add(db_ticket)
+def create_tickets(db: Session, tickets: List[TicketCreate]) -> List[Ticket]:
+    db_tickets = [
+        Ticket(
+            event_id=ticket.event_id,
+            order_id=ticket.order_id,
+            venue_id=ticket.venue_id, 
+            seat_number=ticket.seat_number,
+            price=ticket.price,
+            type=ticket.type
+        )
+        for ticket in tickets  # 遍歷 tickets 列表中的每一個票券資料
+    ]
+    db.add_all(db_tickets) # 這裡要用 add_all()，因為 db_ticket 是一個列表
     db.commit()
-    db.refresh(db_ticket)
-    return db_ticket
+    db.refresh(db_tickets)
+    return db_tickets
 
 def get_ticket(db: Session, ticket_id: int) -> Optional[Ticket]:
     return db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
