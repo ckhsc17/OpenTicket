@@ -81,7 +81,7 @@ export default function HomePage() {
         <Button //待修改
           variant="contained"
           color="primary"
-          onClick={() => router.push('/events')}
+          onClick={() => router.push('/create_event')}
         >
           創建新活動
         </Button>
