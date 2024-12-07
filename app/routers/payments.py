@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas import EventCreate, EventOut, UserOut, PaymentOut, PaymentCreate
 from app.models import Event, Seat, Ticket, Order, Payment, PaymentStatus
 from app.dependencies import user_dependency
-from app.crud import create_payment, get_payment
+from app.crud import create_payment, get_payment, get_orders_list
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
 from passlib.context import CryptContext
@@ -30,7 +30,7 @@ def get_payments_by_order(
 @router.get("/payments/user/{user_id}", response_model=List[PaymentOut], tags=["Payments"])
 def get_payments_by_user(user_id: int, db: Session = Depends(get_db)):
     # 從 order 中找出 user_id 相同的order
-    orders = db.query(Order).filter(Order.user_id == user_id).all()
+    orders = get_orders_list(db, user_id)
     payments = []
     for order in orders:
         payments.append(db.query(Payment).filter(Payment.order_id == order.order_id).all())
