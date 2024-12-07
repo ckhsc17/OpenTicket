@@ -65,6 +65,16 @@ class EventOut(EventBase):
         from_attributes = True 
         #orm_mode = True
 
+class EventAnalytics(BaseModel):
+    event_id: int
+    event_name: str
+    event_date: str
+    total_sales: float
+    total_seats: int
+    utilized_seats: int
+    seat_utilization: float
+    total_participants: int
+
 class VenueBase(BaseModel):
     venue_name: str
     address: Optional[str] = None

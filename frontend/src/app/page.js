@@ -85,12 +85,20 @@ export default function HomePage() {
         >
           創建新活動
         </Button>
-        <Button //待修改
+        <Button
           variant="contained"
           color="primary"
           onClick={() => router.push('/me')}
         >
           Me
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => router.push('/organizer')}
+        >
+          組織者
         </Button>
         
         <Button

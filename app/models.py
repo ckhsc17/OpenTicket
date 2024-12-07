@@ -79,6 +79,8 @@ class Ticket(Base):
     order_id = Column(Integer, ForeignKey('orders.order_id')) 
     venue_id = Column(Integer) #, ForeignKey("venues.venue_id", ondelete="SET NULL")
     seat_number = Column(Integer) #, ForeignKey("seats.seat_number", ondelete="SET NULL")
+    venue_id = Column(Integer)
+    seat_number = Column(Integer)
 
     # 定義複合外鍵
     __table_args__ = (
