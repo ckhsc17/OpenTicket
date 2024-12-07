@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import User, Event, Venue, Seat, Ticket, Order, Payment
+from app.models import User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus
 from app.schemas import (
     UserCreate, UserOut, EventCreate, EventOut,
     VenueCreate, VenueOut, SeatCreate, SeatOut,
@@ -8,6 +8,7 @@ from app.schemas import (
 )
 from passlib.context import CryptContext
 from typing import List, Optional
+from datetime import datetime
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -276,14 +277,12 @@ def get_order(db: Session, order_id: int) -> Optional[Order]:
 def get_orders(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[Order]:
     return db.query(Order).filter(Order.user_id == user_id).offset(skip).limit(limit).all()
 
-def update_order(db: Session, order_id: int, order_update: OrderCreate) -> Optional[Order]:
+def update_order(db: Session, order_id: int, status: str) -> Optional[Order]:
     order = db.query(Order).filter(Order.order_id == order_id).first()
     if not order:
         return None
     
-    for key, value in order_update.model_dump(exclude_unset=True).items():
-        setattr(order, key, value)
-    
+    setattr(order, 'status', status)
     db.commit()
     db.refresh(order)
     return order
@@ -303,11 +302,18 @@ def create_payment(db: Session, payment: PaymentCreate) -> Payment:
         order_id=payment.order_id,
         amount=payment.amount,
         method=payment.method,
-        status=payment.status
+        status=payment.status,
+        payment_date=datetime.now() # 邏輯上付款時間應該是付款當下，但這裡先設定為 function 執行時間
     )
     db.add(db_payment)
     db.commit()
     db.refresh(db_payment)
+
+    # 更新訂單狀態時保留原有訂單的資料
+    order = get_order(db, payment.order_id)
+    if order:
+        update_order(db, payment.order_id, OrderStatus.paid)
+    
     return db_payment
 
 def get_payment(db: Session, payment_id: int) -> Optional[Payment]:

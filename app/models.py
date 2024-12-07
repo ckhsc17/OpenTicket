@@ -77,8 +77,6 @@ class Ticket(Base):
     price = Column(DECIMAL(10, 2), nullable=False)
     type = Column(String(20), default="Available")
     order_id = Column(Integer, ForeignKey('orders.order_id')) 
-    venue_id = Column(Integer) #, ForeignKey("venues.venue_id", ondelete="SET NULL")
-    seat_number = Column(Integer) #, ForeignKey("seats.seat_number", ondelete="SET NULL")
     venue_id = Column(Integer)
     seat_number = Column(Integer)
 
@@ -96,9 +94,9 @@ class Ticket(Base):
     order = relationship("Order", back_populates="tickets")
 
 class OrderStatus(str, enum.Enum):
-    Pending = "Pending"
-    Paid = "Paid"
-    Canceled = "Canceled"
+    pending = "pending"
+    paid = "paid"
+    canceled = "canceled"
 
 class Order(Base):
     __tablename__ = "orders"
