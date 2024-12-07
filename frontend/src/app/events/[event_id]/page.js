@@ -28,10 +28,12 @@ export default function EventDetailsPage() {
     const storedToken = localStorage.getItem('token');
     setToken(storedToken);
 
+    /*
     if (!storedToken) {
       console.error("Token is missing");
       return;
     }
+    */
 
     const fetchEventDetails = async () => {
       try {

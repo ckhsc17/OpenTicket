@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             }); // 向 server 发送请求，获取 token
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`; //client 向 server 发送请求时，会自动带上 token
+            console.log('response:', response.data);
             localStorage.setItem('token', response.data.access_token); // 将 token 存储在 localStorage 中
             //儲存user_id
             localStorage.setItem('user_id', response.data.user_id);
