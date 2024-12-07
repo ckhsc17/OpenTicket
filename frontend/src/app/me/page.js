@@ -266,24 +266,6 @@ export default function EventListPage() {
                                             ${ticket.price}
                                         </span>
                                     </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                        Seat Number:{" "}
-                                        <span style={{ fontWeight: "normal" }}>
-                                            {ticket.seat_number}
-                                        </span>
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                        Type:{" "}
-                                        <span style={{ fontWeight: "normal" }}>
-                                            {ticket.type}
-                                        </span>
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                        Venue ID:{" "}
-                                        <span style={{ fontWeight: "normal" }}>
-                                            {ticket.venue_id}
-                                        </span>
-                                    </Typography>
                                 </CardContent>
                             </Card>
                         ))

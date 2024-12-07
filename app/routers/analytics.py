@@ -1,35 +1,38 @@
+from itertools import count
 from fastapi import APIRouter, Depends, HTTPException
+from requests import get
 from app.models import Event, Seat, Ticket, Order, Venue
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
 from typing import List
 from app.schemas import EventAnalytics, OrderOut
+from app.crud import count_total_seats, utilized_seats, total_sales, total_participants, get_event, get_venue, get_recent_orders, get_events_by_organizer
 
 router = APIRouter()
 
 @router.get("/analysis/events/{event_id}", response_model=EventAnalytics, tags=["Analytics"])
 def get_event_analysis(event_id: int, db: Session = Depends(get_db)):
     # 獲取活動的座位總數
-    total_seats = db.query(Seat).filter(Seat.venue_id == Event.venue_id).count()
+    Total_seats = count_total_seats(db, event_id)
 
     # 獲取已售座位數
-    utilized_seats = db.query(Ticket).filter(Ticket.event_id == event_id, Ticket.order_id.isnot(None)).count()
+    Utilized_seats = utilized_seats(db, event_id)
 
     # 計算座位利用率
-    seat_utilization = (utilized_seats / total_seats * 100) if total_seats > 0 else 0
+    seat_utilization = (Utilized_seats / Total_seats * 100) if Total_seats > 0 else 0
 
     # 獲取活動的總銷售額
-    total_sales = db.query(Ticket).filter(Ticket.event_id == event_id, Ticket.order_id.isnot(None)).join(Order).with_entities(Ticket.price).all()
-    total_sales = sum(ticket.price for ticket in total_sales)
+    Total_sales = total_sales(db, event_id)
 
     # 獲取活動的參加人數
-    total_participants = db.query(Order).join(Ticket).filter(Ticket.event_id == event_id).distinct(Order.user_id).count()
-
-    event = db.query(Event).filter(Event.event_id == event_id).first()
+    Total_participants = total_participants(db, event_id)
+    
+    event = get_event(db, event_id)
+    
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     
-    venue = db.query(Venue).filter(Venue.venue_id == event.venue_id).first()
+    venue = get_venue(db, event.venue_id)
     if not venue:
         raise HTTPException(status_code=404, detail="Venue not found")
     
@@ -42,51 +45,47 @@ def get_event_analysis(event_id: int, db: Session = Depends(get_db)):
         event_date=event.event_date.strftime("%Y-%m-%d"),
         venue_id=event.venue_id, # type: ignore
         description=str(event.description),
-        total_sales=float(total_sales),
-        total_seats=total_seats,
-        utilized_seats=utilized_seats,
+        total_sales=float(Total_sales),
+        total_seats=Total_seats,
+        utilized_seats=Utilized_seats,
         seat_utilization=round(seat_utilization, 2),
-        total_participants=total_participants,
+        total_participants=Total_participants,
         venue=venue_name
     )
     
 @router.get("/analysis/organizer/{organizer_id}", response_model=List[EventAnalytics], tags=["Analytics"])
 def get_organizer_analysis(organizer_id: int, db: Session = Depends(get_db)):
     # 獲取組織者的所有活動
-    events = db.query(Event).filter(Event.organizer_id == organizer_id).all()
-    print(events)
+    events = get_events_by_organizer(db, organizer_id)
 
     # 獲取每個活動的分析數據
     analytics = []
     for event in events:
-        total_seats = db.query(Seat).filter(Seat.venue_id == event.venue_id).count()
-        utilized_seats = db.query(Ticket).filter(Ticket.event_id == event.event_id, Ticket.order_id.isnot(None)).count()
-        seat_utilization = (utilized_seats / total_seats * 100) if total_seats > 0 else 0
+        total_seats = count_total_seats(db, event.event_id)
+        Utilized_seats = utilized_seats(db, event.event_id)
+        seat_utilization = (Utilized_seats / total_seats * 100) if total_seats > 0 else 0
+        Total_sales = total_sales(db, event.event_id)
+        Total_participants = total_participants(db, event.event_id)
 
-        total_sales = db.query(Ticket).filter(Ticket.event_id == event.event_id, Ticket.order_id.isnot(None)).join(Order).with_entities(Ticket.price).all()
-        total_sales = sum(ticket.price for ticket in total_sales)
-
-        total_participants = db.query(Order).join(Ticket).filter(Ticket.event_id == event.event_id).distinct(Order.user_id).count()
-
-        venue = db.query(Venue).filter(Venue.venue_id == event.venue_id).first()
+        venue = get_venue(db, event.venue_id)
         if not venue:
             raise HTTPException(status_code=404, detail="Venue not found")
         venue_name = str(venue.venue_name)
 
         analytics.append(
             EventAnalytics(
-                event_id=event.event_id, # type: ignore
+                event_id=event.event_id,
                 event_name=str(event.event_name),
                 performer=str(event.performer),
                 description=str(event.description),
                 event_date=event.event_date.strftime("%Y-%m-%d"),
-                venue_id=event.venue_id, # type: ignore
-                total_sales=float(total_sales),
+                venue_id=event.venue_id,
+                total_sales=float(Total_sales),
                 total_seats=total_seats,
-                utilized_seats=utilized_seats,
+                utilized_seats=Utilized_seats,
                 seat_utilization=round(seat_utilization, 2),
-                total_participants=total_participants,
-                venue=str(venue_name)
+                total_participants=Total_participants,
+                venue=venue_name
             )
         )
 
@@ -94,6 +93,6 @@ def get_organizer_analysis(organizer_id: int, db: Session = Depends(get_db)):
 
 # Recent orders
 @router.get("/analysis/orders/recent/{organizer_id}", response_model=List[OrderOut], tags=["Analytics"])
-def get_recent_orders(organizer_id: int, db: Session = Depends(get_db)):
-    orders = db.query(Order).join(Ticket).join(Event).filter(Event.organizer_id == organizer_id).order_by(Order.order_date.desc()).limit(10).all()
+def recent_order(organizer_id: int, db: Session = Depends(get_db)):
+    orders = get_recent_orders(db, organizer_id)
     return orders

@@ -72,6 +72,27 @@ export default function OrganizerEventListPage() {
         setEditingEvent({ ...event }); // 克隆活動數據
     };
 
+    const fetchEventAnalysis = async (eventId) => {
+        const storedToken = localStorage.getItem('token');
+        if (!storedToken) {
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:8000/analysis/events/${eventId}`, {
+                headers: {
+                    Authorization: `Bearer ${storedToken}`,
+                },
+            });
+            setSelectedEvent(response.data);
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error fetching event analysis:', error);
+            setError('Failed to fetch event analysis. Please try again later.');
+        }
+    };
+
     const handleSaveEdit = async () => {
         const storedToken = localStorage.getItem('token');
         if (!storedToken) {
@@ -134,7 +155,7 @@ export default function OrganizerEventListPage() {
                 我的活動列表
             </Typography>
 
-            <Grid container spacing={3}>
+            <Grid container spacing={4}>
                 {events.map((event) => (
                     <Grid item xs={12} sm={6} md={4} key={event.event_id}>
                         <Card
@@ -157,18 +178,97 @@ export default function OrganizerEventListPage() {
                                 <Typography variant="body2" sx={{ mt: 1, color: '#555' }}>
                                     <strong>地點:</strong> {event.venue}
                                 </Typography>
-                                <Button
-                                    variant="outlined"
-                                    sx={{ mt: 2 }}
-                                    onClick={() => handleEditButtonClick(event)}
-                                >
-                                    編輯
-                                </Button>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => handleEditButtonClick(event)}
+                                    >
+                                        編輯
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => fetchEventAnalysis(event.event_id)}
+                                    >
+                                        查看分析
+                                    </Button>
+                                </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
+
+            <Modal
+                open={!!selectedEvent}
+                onClose={() => setSelectedEvent(null)}
+                aria-labelledby="event-analysis-modal-title"
+                aria-describedby="event-analysis-modal-description"
+            >
+                <Paper
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 600,
+                        bgcolor: '#fff',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 3,
+                    }}
+                >
+                    {selectedEvent ? (
+                        <>
+                            <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#1976d2' }}>
+                                活動分析
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+                            <Typography variant="body1" sx={{ mb: 1, color: '#333' }}>
+                                <strong>活動名稱:</strong> {selectedEvent.event_name}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>表演者:</strong> {selectedEvent.performer}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>日期:</strong> {new Date(selectedEvent.event_date).toLocaleDateString()}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>描述:</strong> {selectedEvent.description}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>地點:</strong> {selectedEvent.venue}
+                            </Typography>
+                            <Divider sx={{ mb: 2, mt: 2 }} />
+                            <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#1976d2' }}>
+                                統計數據
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>總參與人數:</strong> {selectedEvent.total_participants}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>總銷售額:</strong> ${selectedEvent.total_sales.toFixed(2)}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>總座位數:</strong> {selectedEvent.total_seats}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>已使用座位數:</strong> {selectedEvent.utilized_seats}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>座位利用率:</strong> {(selectedEvent.seat_utilization).toFixed(2)}%
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>狀態:</strong> {selectedEvent.status}
+                            </Typography>
+                        </>
+                    ) : (
+                        <Typography variant="body1" sx={{ color: 'error.main' }}>
+                            無法加載活動數據
+                        </Typography>
+                    )}
+                </Paper>
+            </Modal>
 
             <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold', mt: 6, mb: 2, color: '#333' }}>
                 最近訂單

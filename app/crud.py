@@ -341,3 +341,25 @@ def delete_payment(db: Session, payment_id: int) -> bool:
     db.delete(payment)
     db.commit()
     return True
+
+
+# --- 分析功能 ---
+
+def count_total_seats(db: Session, venue_id: int) -> int:
+    return db.query(Seat).filter(Seat.venue_id == venue_id).count()
+
+def utilized_seats(db: Session, event_id: int) -> int:
+    return db.query(Ticket).filter(Ticket.event_id == event_id, Ticket.order_id.isnot(None)).count()
+
+def total_sales(db: Session, event_id: int) -> float:
+    tickets = db.query(Ticket).filter(Ticket.event_id == event_id, Ticket.order_id.isnot(None)).join(Order).with_entities(Ticket.price).all()
+    return sum(ticket.price for ticket in tickets)
+
+def total_participants(db: Session, event_id: int) -> int:
+    return db.query(Ticket).filter(Ticket.event_id == event_id, Ticket.order_id.isnot(None)).count()
+
+def get_events_by_organizer(db: Session, organizer_id: int) -> List[Event]:
+    return db.query(Event).filter(Event.organizer_id == organizer_id).all()
+
+def get_recent_orders(db: Session, organizer_id: int) -> List[Order]:
+    return db.query(Order).join(Ticket).join(Event).filter(Event.organizer_id == organizer_id).order_by(Order.order_date.desc()).limit(10).all()
