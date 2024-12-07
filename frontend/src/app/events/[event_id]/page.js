@@ -96,7 +96,7 @@ export default function EventDetailsPage() {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => router.push('/tickets')}
+              onClick={() => router.push(`/events/${event_id}/seats`)}
             >
               購買門票
             </Button>

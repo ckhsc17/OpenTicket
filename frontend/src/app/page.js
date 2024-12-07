@@ -78,6 +78,20 @@ export default function HomePage() {
         >
           查看活動列表
         </Button>
+        <Button //待修改
+          variant="contained"
+          color="primary"
+          onClick={() => router.push('/events')}
+        >
+          創建新活動
+        </Button>
+        <Button //待修改
+          variant="contained"
+          color="primary"
+          onClick={() => router.push('/events')}
+        >
+          Me
+        </Button>
         <Button
           variant="contained"
           color="secondary"
@@ -85,6 +99,7 @@ export default function HomePage() {
         >
           關於我們
         </Button>
+        
       </Box>
     </Box>
   );

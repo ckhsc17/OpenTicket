@@ -75,10 +75,12 @@ export default function EventListPage() {
             style={{ width: '300px', cursor: 'pointer' }}
             onClick={() => handleEventClick(event.event_id)}
             >
-            <CardContent>
-              <Typography variant="h5">{event.title} Event </Typography>
-              <Typography variant="body2">{event.date} </Typography>
-              <Typography variant="body2">{event.location}</Typography>
+              
+            <CardContent //Card排版待處理 
+            > 
+              <Typography variant="h5">{event.event_name} </Typography>
+              <Typography variant="body2">{event.event_date} </Typography>
+              <Typography variant="body2">Venue: {event.venue_id}</Typography>
             </CardContent>
           </Card>
         ))}
