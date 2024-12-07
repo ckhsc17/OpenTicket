@@ -102,3 +102,6 @@ pip3 install passlib[bcrypt] python-jose
 
 ### 2024/12/07.a
 > Add event looking page and setup frontend routing
+
+### 2024/12/07.b
+> Fix seats generating and tickets history for users
