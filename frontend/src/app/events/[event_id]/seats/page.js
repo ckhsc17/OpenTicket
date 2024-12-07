@@ -137,9 +137,9 @@ export default function EventDetailsPage() {
       alert(`以下座位已經被選擇，請重新選擇: ${unavailableSeats.join(", ")}`);
       return;
     }
-  
+
     // 清理計時器
-    selectedSeats.forEach((seatNumber) => clearTimeout(lockTimers[seatNumber]));
+    //selectedSeats.forEach((seatNumber) => clearTimeout(lockTimers[seatNumber]));
   
     // 準備訂單資料
     const orderData = {
@@ -217,8 +217,21 @@ export default function EventDetailsPage() {
       const data = await response.json();
       console.log("Ticket created successfully:", data);
 
+      //迭代每個selectedSeats，更新狀態為Reserved
+      selectedSeats.forEach((seatNumber) => updateSeatStatus(seatNumber, "Reserved"));
+      
+      /*
+      // 啟動 5 分鐘倒計時
+      const timer = setTimeout(() => {
+        updateSeatStatus(seatNumber, "Available");
+        setSelectedSeats((prev) => prev.filter((num) => num !== seatNumber));
+      }, 5 * 60 * 1000);
+
+      setLockTimers((prev) => ({ ...prev, [seatNumber]: timer }));
+      */
+
       // 跳轉到付款頁面
-      router.push(`/payment?event_id=${event_id}&seat_numbers=${selectedSeats.join(", ")}`);
+      router.push(`/payment?event_id=${event_id}&order_id=${order_id}&seat_numbers=${selectedSeats.join(", ")}`);
     } catch (error) {
       console.error("Error creating order:", error);
       alert("創建票券時發生錯誤，請稍後再試！");

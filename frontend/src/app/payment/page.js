@@ -7,6 +7,7 @@ import { Button, Typography, Box, Select, MenuItem, TextField } from '@mui/mater
 export default function PaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const order_id = searchParams.get('order_id');
   const event_id = searchParams.get('event_id');
   const seat_numbers = searchParams.get('seat_numbers')?.split(",") || [];
   const [eventDetails, setEventDetails] = useState(null);
@@ -63,6 +64,24 @@ export default function PaymentPage() {
       router.push('/');
     } catch (error) {
       console.error('Error confirming payment:', error);
+    }
+  };
+
+  const handleCancelPayment = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/orders/${order_id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) throw new Error('Failed to cancel payment');
+  
+      // 成功後跳回首頁
+      router.push('/');
+    } catch (error) {
+      console.error('Error canceling payment:', error);
     }
   };
 
@@ -159,7 +178,7 @@ export default function PaymentPage() {
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => router.push('/')}
+              onClick={() => handleCancelPayment()}
             >
               取消付款
             </Button>
