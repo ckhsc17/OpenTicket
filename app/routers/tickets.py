@@ -60,6 +60,12 @@ def get_sold_tickets(event_id: int, db: Session = Depends(get_db)):
     tickets = db.query(Ticket).filter(Ticket.event_id == event_id).all()
     return tickets
 
+# Search for sold tickets by user
+@router.get("/users/{user_id}/sold_tickets", tags=["Tickets"])
+def get_sold_tickets_by_user(user_id: int, db: Session = Depends(get_db)):
+    tickets = db.query(Ticket).join(Order).filter(Order.user_id == user_id).all()
+    return tickets
+
 
 
 '''
