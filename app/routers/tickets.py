@@ -10,7 +10,7 @@ from app.database_connection import get_db
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
-from typing import Optional
+from typing import Optional, List
 import os
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -66,8 +66,10 @@ def get_sold_tickets_by_user(user_id: int, db: Session = Depends(get_db)):
     tickets = db.query(Ticket).join(Order).filter(Order.user_id == user_id).all()
     return tickets
 
-@router.post("/tickets", response_model=TicketOut, tags=["Tickets"])
+@router.post("/tickets", tags=["Tickets"]) #response_model=List[TicketOut]
 def create_one_or_multiple_tickets(ticket: List[TicketCreate], db: Session = Depends(get_db)):
+    print("hi from create_one_or_multiple_tickets")
+    print("ticket", ticket)
     new_ticket = create_tickets(db, ticket)
     return new_ticket
 

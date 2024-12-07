@@ -51,3 +51,10 @@ def pay(status: bool, current_user: user_dependency, payment: PaymentCreate, db:
         db.commit()
         db.refresh(payment)
         return payment
+    
+@router.get("/payments/status", response_model=List[PaymentOut], tags=["Payments"])
+def get_payment_status(payment_id: int, db: Session = Depends(get_db)):
+    payment = db.query(Payment).filter(Payment.payment_id == payment_id).first()
+    if not payment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
+    return payment

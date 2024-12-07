@@ -49,7 +49,7 @@ export default function PaymentPage() {
         order_status: 'paid',
       };
 
-      const response = await fetch('http://localhost:8000/orders', {
+      const response = await fetch('http://localhost:8000/payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

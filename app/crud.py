@@ -224,7 +224,7 @@ def create_tickets(db: Session, tickets: List[TicketCreate]) -> List[Ticket]:
     ]
     db.add_all(db_tickets) # 這裡要用 add_all()，因為 db_ticket 是一個列表
     db.commit()
-    db.refresh(db_tickets)
+    #db.refresh(db_tickets)
     return db_tickets
 
 def get_ticket(db: Session, ticket_id: int) -> Optional[Ticket]:
