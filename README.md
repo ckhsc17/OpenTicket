@@ -114,3 +114,6 @@ pip3 install passlib[bcrypt] python-jose
 > Fix the routing of seat and auth
 >
 > Implement create_order in the front end
+
+### 2024/12/08.a
+> Implement Me page

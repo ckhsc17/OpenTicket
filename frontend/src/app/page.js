@@ -88,10 +88,11 @@ export default function HomePage() {
         <Button //待修改
           variant="contained"
           color="primary"
-          onClick={() => router.push('/events')}
+          onClick={() => router.push('/me')}
         >
           Me
         </Button>
+        
         <Button
           variant="contained"
           color="secondary"
