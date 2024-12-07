@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.models import Event, Seat, Ticket, Order
+from app.models import Event, Seat, Ticket, Order, Venue
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
 from typing import List
-from app.schemas import EventAnalytics
+from app.schemas import EventAnalytics, OrderOut
 
 router = APIRouter()
 
@@ -25,15 +25,25 @@ def get_event_analysis(event_id: int, db: Session = Depends(get_db)):
     # 獲取活動的參加人數
     total_participants = db.query(Order).join(Ticket).filter(Ticket.event_id == event_id).distinct(Order.user_id).count()
 
+    event = db.query(Event).filter(Event.event_id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    venue_name = db.query(Venue).filter(Venue.venue_id == event.venue_id).first().venue_name
+
     return EventAnalytics(
         event_id=event_id,
         event_name=event.event_name,
+        performer=event.performer,
         event_date=event.event_date.strftime("%Y-%m-%d"),
+        venue_id=event.venue_id,
+        description=event.description,
         total_sales=float(total_sales),
         total_seats=total_seats,
         utilized_seats=utilized_seats,
         seat_utilization=round(seat_utilization, 2),
         total_participants=total_participants,
+        venue=venue_name
     )
     
 @router.get("/analysis/organizer/{organizer_id}", response_model=List[EventAnalytics], tags=["Analytics"])
@@ -54,15 +64,29 @@ def get_organizer_analysis(organizer_id: int, db: Session = Depends(get_db)):
 
         total_participants = db.query(Order).join(Ticket).filter(Ticket.event_id == event.event_id).distinct(Order.user_id).count()
 
-        analytics.append(EventAnalytics(
-            event_id=event.event_id,
-            event_name=event.event_name,
-            event_date=event.event_date.strftime("%Y-%m-%d"),
-            total_sales=float(total_sales),
-            total_seats=total_seats,
-            utilized_seats=utilized_seats,
-            seat_utilization=round(seat_utilization, 2),
-            total_participants=total_participants,
-        ))
+        venue_name = db.query(Venue).filter(Venue.venue_id == event.venue_id).first().venue_name
+
+        analytics.append(
+            EventAnalytics(
+                event_id=event.event_id,
+                event_name=event.event_name,
+                performer=event.performer,
+                description=event.description,
+                event_date=event.event_date.strftime("%Y-%m-%d"),
+                venue_id=event.venue_id,
+                total_sales=float(total_sales),
+                total_seats=total_seats,
+                utilized_seats=utilized_seats,
+                seat_utilization=round(seat_utilization, 2),
+                total_participants=total_participants,
+                venue=venue_name
+            )
+        )
 
     return analytics
+
+# Recent orders
+@router.get("/analysis/orders/recent/{organizer_id}", response_model=List[OrderOut], tags=["Analytics"])
+def get_recent_orders(organizer_id: int, db: Session = Depends(get_db)):
+    orders = db.query(Order).join(Ticket).join(Event).filter(Event.organizer_id == organizer_id).order_by(Order.order_date.desc()).limit(10).all()
+    return orders

@@ -1,3 +1,4 @@
+from ssl import create_default_context
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import date, datetime
@@ -65,9 +66,10 @@ class EventOut(EventBase):
         from_attributes = True 
         #orm_mode = True
 
-class EventAnalytics(BaseModel):
+class EventAnalytics(EventBase):
     event_id: int
     event_name: str
+    venue: str
     event_date: str
     total_sales: float
     total_seats: int

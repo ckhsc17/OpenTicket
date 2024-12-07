@@ -3,21 +3,42 @@ import "../globals.css";
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, CircularProgress, Button, Grid, Modal, Divider } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Card,
+    CardContent,
+    CircularProgress,
+    Button,
+    Grid,
+    Modal,
+    Divider,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from '@mui/material';
 import axios from 'axios';
 
 export default function OrganizerEventListPage() {
     const router = useRouter();
     const [events, setEvents] = useState([]);
-    const [selectedEvent, setSelectedEvent] = useState(null); // 用於存儲選中的活動數據
-    const [loading, setLoading] = useState(true); // Loading state
-    const [error, setError] = useState(null); // Error state
-    const [modalOpen, setModalOpen] = useState(false); // 控制模態框顯示
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [recentOrders, setRecentOrders] = useState([]);
 
-    // Fetch organizer events data
     useEffect(() => {
         const fetchEvents = async () => {
             const storedToken = localStorage.getItem('token');
+            if (!storedToken) {
+                router.push('/login');
+                return;
+            }
 
             try {
                 setLoading(true);
@@ -27,7 +48,6 @@ export default function OrganizerEventListPage() {
                     },
                 });
 
-                console.log('Fetched events:', response.data);
                 setEvents(response.data);
                 setLoading(false);
             } catch (error) {
@@ -37,10 +57,31 @@ export default function OrganizerEventListPage() {
             }
         };
 
-        fetchEvents();
-    }, []);
+        const fetchRecentOrders = async () => {
+            const storedToken = localStorage.getItem('token');
+            if (!storedToken) {
+                router.push('/login');
+                return;
+            }
 
-    // Render loading state
+            try {
+                const response = await axios.get(`http://localhost:8000/analysis/orders/recent/6540`, {
+                    headers: {
+                        Authorization: `Bearer ${storedToken}`,
+                    },
+                });
+
+                setRecentOrders(response.data);
+            } catch (error) {
+                console.error('Error fetching recent orders:', error);
+                setError('Failed to fetch recent orders. Please try again later.');
+            }
+        };
+
+        fetchEvents();
+        fetchRecentOrders();
+    }, [router]);
+
     if (loading) {
         return (
             <Box className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -52,7 +93,6 @@ export default function OrganizerEventListPage() {
         );
     }
 
-    // Render error state
     if (error) {
         return (
             <Box className="flex justify-center items-center min-h-screen bg-gray-100 flex-col">
@@ -67,8 +107,8 @@ export default function OrganizerEventListPage() {
     }
 
     return (
-        <Box className="p-6 bg-gray-50">
-            <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }} color="black">
+        <Box sx={{ p: 6, bgcolor: '#f7f7f7', minHeight: '100vh' }}>
+            <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold', mb: 4, color: '#333' }}>
                 我的活動列表
             </Typography>
 
@@ -78,10 +118,11 @@ export default function OrganizerEventListPage() {
                         <Card
                             sx={{
                                 boxShadow: 4,
-                                borderRadius: 2,
+                                borderRadius: 3,
                                 overflow: 'hidden',
                                 cursor: 'pointer',
-                                transition: 'transform 0.3s',
+                                background: 'linear-gradient(135deg, #f3f4f6, #ffffff)',
+                                transition: 'transform 0.3s, box-shadow 0.3s',
                                 '&:hover': { transform: 'scale(1.05)', boxShadow: 6 },
                             }}
                             onClick={() => {
@@ -90,14 +131,14 @@ export default function OrganizerEventListPage() {
                             }}
                         >
                             <CardContent>
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', color:'#1976d2' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                                     {event.event_name}
                                 </Typography>
-                                <Typography variant="body2" color="black">
+                                <Typography variant="body2" sx={{ mt: 1, color: '#555' }}>
                                     <strong>日期:</strong> {new Date(event.event_date).toLocaleDateString()}
                                 </Typography>
-                                <Typography variant="body2" color="black">
-                                    <strong>地點:</strong> {event.venue_id}
+                                <Typography variant="body2" sx={{ mt: 1, color: '#555' }}>
+                                    <strong>地點:</strong> {event.venue}
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -105,52 +146,72 @@ export default function OrganizerEventListPage() {
                 ))}
             </Grid>
 
-            {/* Modal for Event Analysis */}
+            <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold', mt: 6, mb: 2, color: '#333' }}>
+                最近訂單
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ boxShadow: 4, borderRadius: 2 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>訂單號</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>日期</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>狀態</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>金額</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {recentOrders.map((order) => (
+                            <TableRow key={order.order_id}>
+                                <TableCell>{order.order_id}</TableCell>
+                                <TableCell>{new Date(order.order_date).toLocaleDateString()}</TableCell>
+                                <TableCell>{order.status}</TableCell>
+                                <TableCell>${order.total_amount.toFixed(2)}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
             <Modal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 aria-labelledby="event-analysis-modal-title"
                 aria-describedby="event-analysis-modal-description"
             >
-                <Box
+                <Paper
                     sx={{
                         position: 'absolute',
                         top: '50%',
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
                         width: 500,
-                        bgcolor: 'background.paper',
+                        bgcolor: '#fff',
                         boxShadow: 24,
                         p: 4,
-                        borderRadius: 2,
+                        borderRadius: 3,
                     }}
                 >
                     {selectedEvent ? (
                         <>
-                            <Typography variant="h5" id="event-analysis-modal-title" sx={{ mb: 2, fontWeight: 'bold' }} color="black">
+                            <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#1976d2' }}>
                                 活動詳情
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
-                            <Typography variant="body1" color="black">
+                            <Typography variant="body1" sx={{ mb: 1, color: '#333' }}>
                                 <strong>活動名稱:</strong> {selectedEvent.event_name}
                             </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }} color="black">
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
                                 <strong>日期:</strong> {new Date(selectedEvent.event_date).toLocaleDateString()}
                             </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }} color="black">
-                                <strong>參與人數:</strong> {selectedEvent.total_participants}
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>表演者:</strong> {selectedEvent.performer}
                             </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }} color="black">
-                                <strong>總銷售額:</strong> ${selectedEvent.total_sales.toFixed(2)}
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>描述:</strong> {selectedEvent.description}
                             </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }} color="black">
-                                <strong>總座位數:</strong> {selectedEvent.total_seats}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }} color="black">
-                                <strong>已使用座位數:</strong> {selectedEvent.utilized_seats}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mt: 1 }} color="black">
-                                <strong>座位利用率:</strong> {selectedEvent.seat_utilization}%
+                            <Typography variant="body2" sx={{ mb: 1, color: '#555' }}>
+                                <strong>狀態:</strong> {selectedEvent.status}
                             </Typography>
                         </>
                     ) : (
@@ -158,7 +219,7 @@ export default function OrganizerEventListPage() {
                             無法加載活動數據
                         </Typography>
                     )}
-                </Box>
+                </Paper>
             </Modal>
         </Box>
     );
