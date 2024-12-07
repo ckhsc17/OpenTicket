@@ -9,9 +9,9 @@ from sqlalchemy.orm import relationship
 from app.database_connection import Base
 
 class UserRole(str, enum.Enum):
-    User = "User"
-    Organizer = "Organizer"
-    Admin = "Admin"
+    user = "User"
+    organizer = "Organizer"
+    admin = "Admin"
 
 class User(Base):
     __tablename__ = "users"
@@ -20,7 +20,7 @@ class User(Base):
     password = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     phone = Column(String(20))
-    role = Column(Enum(UserRole), nullable=False)
+    role = Column(Enum(UserRole), nullable=False, default="User")
     created_at = Column(DateTime, server_default="CURRENT_TIMESTAMP")
 
     events = relationship("Event", back_populates="organizer") 
@@ -39,8 +39,7 @@ class Event(Base):
     event_date = Column(Date, nullable=False)
     venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="SET NULL"))
     description = Column(String)
-    status = Column(String(20), default="Scheduled")
-
+    status = Column(Enum(EventStatus), nullable=False, default="Scheduled")
     organizer = relationship("User", back_populates="events") #這個拿掉會影響mapping？
     venue = relationship("Venue", back_populates="events")
     tickets = relationship("Ticket", back_populates="event")
@@ -56,16 +55,25 @@ class Venue(Base):
     events = relationship("Event", back_populates="venue")
     seats = relationship("Seat", back_populates="venue")
 
+class SeatType(str, enum.Enum):
+    Regular = "Regular" 
+    VIP = "VIP"
+    Wheelchair = "Wheelchair"
+
+class SeatStatus(str, enum.Enum):
+    Available = "Available"
+    Reserved = "Reserved"
+    Sold = "Sold"
+
 class Seat(Base):
     __tablename__ = "seats"
-    #seat_id = Column(Integer, primary_key=True, index=True)
     venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="CASCADE"), primary_key=True)
+    seat_number = Column(String(5), primary_key=True)
+
     section = Column(String(20))
     row = Column(String(5))
-    seat_number = Column(String(5), primary_key=True)
-    seat_type = Column(String(20))
-    #type = Column(String(20))
-    status = Column(String(20), default="Available")
+    seat_type = Column(Enum(SeatType), nullable=False, default="Regular")
+    status = Column(Enum(SeatStatus), nullable=False, default="Available")
 
     venue = relationship("Venue", back_populates="seats")
     ticket = relationship("Ticket", back_populates="seat", uselist=False)
@@ -94,17 +102,17 @@ class Ticket(Base):
     order = relationship("Order", back_populates="tickets")
 
 class OrderStatus(str, enum.Enum):
-    Pending = "pending"
-    Paid = "paid"
-    Canceled = "canceled"
-
+    Pending = "Pending"
+    Paid = "Paid"
+    Canceled = "Canceled"
+    
 class Order(Base):
     __tablename__ = "orders"
     order_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"))
     total_amount = Column(DECIMAL(10, 2), nullable=False)
     order_date = Column(DateTime, server_default="CURRENT_TIMESTAMP")
-    status = Column(Enum(OrderStatus), default="Pending")
+    status = Column(Enum(OrderStatus), nullable=False, default="Pending")
 
     user = relationship("User")
     payments = relationship("Payment", back_populates="order")
@@ -113,7 +121,12 @@ class Order(Base):
 class PaymentStatus(str, enum.Enum):
     Pending = "Pending"
     Completed = "Completed"
-    Failed = "Failed"
+    Canceled = "Canceled"
+
+class PaymentMethod(str, enum.Enum):
+    Credit_Card = "Credit Card"
+    Bank_Transfer = "Bank Transfer"
+    Paypal = "Paypal"
 
 class Payment(Base):
     __tablename__ = "payments"
@@ -121,7 +134,7 @@ class Payment(Base):
     order_id = Column(Integer, ForeignKey("orders.order_id", ondelete="CASCADE"))
     payment_date = Column(DateTime, server_default="CURRENT_TIMESTAMP")
     amount = Column(DECIMAL(10, 2), nullable=False)
-    method = Column(String(20), nullable=False)
-    status = Column(Enum(PaymentStatus), default="Completed")
+    method = Column(Enum(PaymentMethod), nullable=False)
+    status = Column(Enum(PaymentStatus), nullable=False, default="Pending")
 
     order = relationship("Order", back_populates="payments")
