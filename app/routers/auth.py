@@ -33,26 +33,29 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db_user = create_user(db, user)
     return db_user
 
-@router.post("/login", tags=["Authentication"])
+@router.post("/login", response_model=Token, tags=["Authentication"])
 def login(credentials: Login, db: Session = Depends(get_db)):
     
     user = authenticate_user(credentials.email, credentials.password, db)
     
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         username=str(user.username), # 將 username 轉換為字串
-        user_id=user.user_id.scalar(), # 使用 scalar() 方法獲取純量值
+        user_id=int(user.user_id), # type: ignore 使用 scalar() 方法獲取純量值
         expires_delta=access_token_expires
     )
     print("access_token", access_token) 
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post('/token', response_model=Token)
+@router.post('/token', response_model=Token, tags=["Authentication"])
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                                 db: Session = Depends(get_db)): #FastAPI 自動解析請求中的表單數據，生成 OAuth2PasswordRequestForm 類型的對象，並注入到 form_data 中。
+                                 db: Session = Depends(get_db)): 
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
@@ -62,10 +65,11 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        username=str(user.username),
-        user_id=int(user.user_id),
+        username=str(user.username), # 將 username 轉換為字串
+        user_id=int(user.user_id), # type: ignore 使用 scalar() 方法獲取純量值 
         expires_delta=access_token_expires
     )
+    print("access_token", access_token) 
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/users/me", response_model=UserOut, tags=["Authentication"])
