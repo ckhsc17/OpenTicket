@@ -22,7 +22,7 @@ origins = [
     "*",  # 允許所有來源
     # 您也可以指定具體的前端應用網址，例如：
     # "http://localhost",
-    # "http://localhost:3000",
+    "http://localhost:3000",
     # "https://your-frontend-app.com",
 ]
 

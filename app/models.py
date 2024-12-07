@@ -64,7 +64,8 @@ class Seat(Base):
     row = Column(String(5))
     seat_number = Column(String(5), primary_key=True)
     seat_type = Column(String(20))
-    type = Column(String(20))
+    #type = Column(String(20))
+    status = Column(String(20), default="Available")
 
     venue = relationship("Venue", back_populates="seats")
     ticket = relationship("Ticket", back_populates="seat", uselist=False)
