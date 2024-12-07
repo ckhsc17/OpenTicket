@@ -40,17 +40,15 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
 
 def update_user(db: Session, user_id: int, user_update: UserCreate) -> Optional[User]:
     user = db.query(User).filter(User.user_id == user_id).first()
-
     if not user:
         return None
 
-    user.username = user_update.username
-    user.email = user_update.email
-    user.phone = user_update.phone
-    user.role = user_update.role
+    # 使用 setattr 更新屬性
+    for key, value in user_update.model_dump(exclude_unset=True).items():
+        if key == 'password' and value:
+            value = get_password_hash(value)
+        setattr(user, key, value)
 
-    if user_update.password:
-        user.password = get_password_hash(user_update.password)
     db.commit()
     db.refresh(user)
     return user
@@ -104,12 +102,8 @@ def update_event(db: Session, event_id: int, event_update: EventCreate) -> Optio
     if not event:
         return None
     
-    event.event_name = event_update.event_name
-    event.performer = event_update.performer
-    event.event_date = event_update.event_date
-    event.venue_id = event_update.venue_id
-    event.description = event_update.description
-    event.status = event_update.status
+    for key, value in event_update.model_dump(exclude_unset=True).items():
+        setattr(event, key, value)
     
     db.commit()
     db.refresh(event)
@@ -156,10 +150,10 @@ def update_venue(db: Session, venue_id: int, venue_update: VenueCreate) -> Optio
     venue = db.query(Venue).filter(Venue.venue_id == venue_id).first()
     if not venue:
         return None
-    venue.venue_name = venue_update.venue_name
-    venue.address = venue_update.address
-    venue.city = venue_update.city
-    venue.capacity = venue_update.capacity
+    
+    for key, value in venue_update.model_dump(exclude_unset=True).items():
+        setattr(venue, key, value)
+    
     db.commit()
     db.refresh(venue)
     return venue
@@ -198,10 +192,10 @@ def update_seat(db: Session, seat_id: int, seat_update: SeatCreate) -> Optional[
     seat = db.query(Seat).filter(Seat.seat_id == seat_id).first()
     if not seat:
         return None
-    seat.section = seat_update.section
-    seat.row = seat_update.row
-    seat.seat_number = seat_update.seat_number
-    seat.seat_type = seat_update.seat_type
+    
+    for key, value in seat_update.model_dump(exclude_unset=True).items():
+        setattr(seat, key, value)
+    
     db.commit()
     db.refresh(seat)
     return seat
@@ -243,10 +237,10 @@ def update_ticket(db: Session, ticket_id: int, ticket_update: TicketCreate) -> O
     ticket = db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
     if not ticket:
         return None
-    ticket.event_id = ticket_update.event_id
-    ticket.seat_id = ticket_update.seat_id
-    ticket.price = ticket_update.price
-    ticket.status = ticket_update.status
+    
+    for key, value in ticket_update.model_dump(exclude_unset=True).items():
+        setattr(ticket, key, value)
+    
     db.commit()
     db.refresh(ticket)
     return ticket
@@ -283,9 +277,10 @@ def update_order(db: Session, order_id: int, order_update: OrderCreate) -> Optio
     order = db.query(Order).filter(Order.order_id == order_id).first()
     if not order:
         return None
-    order.user_id = order_update.user_id
-    order.total_amount = order_update.total_amount
-    order.status = order_update.status
+    
+    for key, value in order_update.model_dump(exclude_unset=True).items():
+        setattr(order, key, value)
+    
     db.commit()
     db.refresh(order)
     return order
@@ -322,10 +317,10 @@ def update_payment(db: Session, payment_id: int, payment_update: PaymentCreate) 
     payment = db.query(Payment).filter(Payment.payment_id == payment_id).first()
     if not payment:
         return None
-    payment.order_id = payment_update.order_id
-    payment.amount = payment_update.amount
-    payment.method = payment_update.method
-    payment.status = payment_update.status
+    
+    for key, value in payment_update.model_dump(exclude_unset=True).items():
+        setattr(payment, key, value)
+    
     db.commit()
     db.refresh(payment)
     return payment
