@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # 從 app.routers 導入各個模組的路由
-from app.routers import auth, users, events, tickets, orders, payments, seats
+from app.routers import analytics, auth, users, events, tickets, orders, payments, seats
 
 # 創建 FastAPI 應用實例，並設置應用的標題
 app = FastAPI(
@@ -51,6 +51,7 @@ app.include_router(tickets.router)
 app.include_router(orders.router) 
 app.include_router(seats.router) 
 app.include_router(payments.router) 
+app.include_router(analytics.router)
 # app.include_router(users.router)
 
 if __name__ == "__main__":
