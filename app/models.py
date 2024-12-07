@@ -9,9 +9,9 @@ from sqlalchemy.orm import relationship
 from app.database_connection import Base
 
 class UserRole(str, enum.Enum):
-    user = "User"
-    organizer = "Organizer"
-    admin = "Admin"
+    User = "User"
+    Organizer = "Organizer"
+    Admin = "Admin"
 
 class User(Base):
     __tablename__ = "users"
@@ -126,7 +126,7 @@ class PaymentStatus(str, enum.Enum):
 class PaymentMethod(str, enum.Enum):
     Credit_Card = "Credit Card"
     Bank_Transfer = "Bank Transfer"
-    Paypal = "Paypal"
+    PayPal = "PayPal"
 
 class Payment(Base):
     __tablename__ = "payments"
