@@ -20,6 +20,7 @@ export default function PaymentPage() {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
+        console.log('Fetching event details:', event_id);
         const response = await fetch(`http://localhost:8000/events/${event_id}`);
         if (!response.ok) throw new Error('Failed to fetch event details');
         const data = await response.json();
@@ -41,25 +42,41 @@ export default function PaymentPage() {
   // 確認付款
   const handleConfirmPayment = async () => {
     try {
-      const ticketData = {
-        event_id,
-        seat_numbers,
-        total_amount: totalAmount,
-        payment_method: paymentMethod,
-        payment_status: 'completed',
-        order_status: 'paid',
+      // 
+      const paymentData = {
+        order_id: order_id,
+        amount: totalAmount,
+        method: paymentMethod,
+        status: "Completed"
       };
-
-      const response = await fetch('http://localhost:8000/payment', {
+      // 創建payment row
+      const response = await fetch('http://localhost:8000/payments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify(paymentData),
       });
 
       if (!response.ok) throw new Error('Failed to confirm payment');
       
+      console.log('Payment confirmed successfully');
+      
+      const seatData = {
+        seat_numbers: seat_numbers, // 座位號碼的列表 seatNumbers
+        status: "Sold", // 新的狀態
+      };
+
+      // 更新座位狀態
+      const response2 = await fetch(`http://localhost:8000/seats/${eventDetails.venue_id}/update_seat`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(seatData),
+      });
+      console.log('seat update result:', response2);
+
       // 成功後跳回首頁
       router.push('/');
     } catch (error) {
@@ -70,15 +87,31 @@ export default function PaymentPage() {
   const handleCancelPayment = async () => {
     try {
       const response = await fetch(`http://localhost:8000/orders/${order_id}/cancel`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
       });
   
       if (!response.ok) throw new Error('Failed to cancel payment');
-  
+      
+      const seatData = {
+        seat_numbers: seat_numbers, // 座位號碼的列表 seatNumbers
+        status: "Available", // 新的狀態
+      };
+
+      // 更新座位狀態
+      const response2 = await fetch(`http://localhost:8000/seats/${eventDetails.venue_id}/update_seat`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(seatData),
+      });
+      console.log('seat update result:', response2);
+
       // 成功後跳回首頁
+      console.log('Payment canceled successfully');
       router.push('/');
     } catch (error) {
       console.error('Error canceling payment:', error);
@@ -110,6 +143,9 @@ export default function PaymentPage() {
               </Typography>
               <Typography variant="body1" gutterBottom>
                 <strong>活動地點：</strong> 場地 {eventDetails.venue_id}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                <strong>座位編號：</strong> {seat_numbers.join(', ')}
               </Typography>
               <Typography variant="body1" gutterBottom>
                 <strong>票數：</strong> {seat_numbers.length} 張
