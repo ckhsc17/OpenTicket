@@ -112,9 +112,9 @@ class Ticket(Base):
     order = relationship("Order", back_populates="tickets")
 
 class OrderStatus(str, enum.Enum):
-    pending = "Pending"
-    paid = "Paid"
-    canceled = "Canceled"
+    Pending = "Pending"
+    Paid = "Paid"
+    Canceled = "Canceled"
 
 class Order(Base):
     __tablename__ = "orders"

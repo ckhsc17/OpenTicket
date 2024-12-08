@@ -139,18 +139,16 @@ class TicketOut(TicketBase):
         from_attributes = True 
 
 class OrderBase(BaseModel):
-    #user_id: int
+    user_id: int
     total_amount: float
-    status: Optional[str] = "Pending"
+    status: Optional[OrderStatus] = OrderStatus.Pending
 
 class OrderCreate(OrderBase):
-    user_id: int
     total_amount: float #先手動加入，之後會根據所選位子、張數自動計算價格
     order_date: datetime = datetime.now()
-    status: str = OrderStatus.Pending
+    status: Optional[OrderStatus] = OrderStatus.Pending
 
 class OrderOut(OrderBase):
-    order_id: int
     order_date: datetime
 
     class Config:
