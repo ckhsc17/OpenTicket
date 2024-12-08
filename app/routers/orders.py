@@ -40,4 +40,4 @@ def create_order_for_user(order: OrderCreate, db: Session = Depends(get_db)):
 @router.put("/orders/{order_id}/cancel", tags=["Orders"])
 async def cancel_order(order_id: int, db: Session = Depends(get_db)):
     print("hi from cancel_order")
-    update_order(db, order_id, "canceled")
+    update_order(db, order_id, "Canceled")
