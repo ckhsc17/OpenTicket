@@ -118,3 +118,8 @@ pip3 install passlib[bcrypt] python-jose
 ### 2024/12/08.a
 > Implement Me page
 > Implement organizer analysis page
+
+### 2024/12/08.e
+> Implement payment concurrency
+> 
+> Implement order, seat status update in frontend and backend
