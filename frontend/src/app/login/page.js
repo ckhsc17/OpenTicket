@@ -3,76 +3,155 @@
 import { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import axios from "axios";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+} from "@mui/material";
 
 const Login = () => {
-    const { login } = useContext(AuthContext);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [registerUsername, setRegisterUsername] = useState('');
-    const [registerPassword, setRegisterPassword] = useState('');
+  const { login } = useContext(AuthContext);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [registerUsername, setRegisterUsername] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [error, setError] = useState(null);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        login(username, password)
-    };
-
-    const handleRegister = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.post('http://localhost:8000/auth/login', {
-          username: registerUsername,
-          password: registerPassword,
-        });
-        login(registerUsername, registerPassword);
-      } catch(error) {
-        console.error('Failed to register user:', error);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await login(username, password);
+    } catch (error) {
+      setError("Failed to login. Please check your credentials.");
     }
-  }
+  };
 
-    return (
-        <div className="container">
-          <h2>Login</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="username" className="form-label">Username</label>
-              <input type="text" className="form-control" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label>
-              <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
-            <button type="submit" className="btn btn-primary">Login</button>
-          </form>
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:8000/auth/register', {
+        username: registerUsername,
+        password: registerPassword,
+      });
+      login(registerUsername, registerPassword);
+    } catch (error) {
+      setError("Failed to register. Please try again.");
+    }
+  };
 
-      <h2 className='mt-5'>Register</h2>
-      <form onSubmit={handleRegister}>
-        <div className="mb-3">
-          <label htmlFor="registerUsername" className="form-label">Username</label>
-          <input
-            type="text"
-            className="form-control"
-            id="registerUsername"
-            value={registerUsername}
-            onChange={(e) => setRegisterUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="registerPassword" className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            id="registerPassword"
-            value={registerPassword}
-            onChange={(e) => setRegisterPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">Register</button>
-      </form>
-        </div>
-      );
-
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "#f5f5f5",
+        p: 3,
+      }}
+    >
+      <Grid container spacing={4} maxWidth="md">
+        <Grid item xs={12} md={6}>
+          <Card sx={{ boxShadow: 4, borderRadius: 2 }}>
+            <CardContent>
+              <Typography variant="h5" textAlign="center" gutterBottom>
+                Login
+              </Typography>
+              {error && (
+                <Typography
+                  color="error"
+                  sx={{ mb: 2, textAlign: "center" }}
+                >
+                  {error}
+                </Typography>
+              )}
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  variant="outlined"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  sx={{ mb: 2 }}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  type="password"
+                  label="Password"
+                  variant="outlined"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{ mb: 2 }}
+                  required
+                />
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 1 }}
+                >
+                  Login
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card sx={{ boxShadow: 4, borderRadius: 2 }}>
+            <CardContent>
+              <Typography variant="h5" textAlign="center" gutterBottom>
+                Register
+              </Typography>
+              {error && (
+                <Typography
+                  color="error"
+                  sx={{ mb: 2, textAlign: "center" }}
+                >
+                  {error}
+                </Typography>
+              )}
+              <form onSubmit={handleRegister}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  variant="outlined"
+                  value={registerUsername}
+                  onChange={(e) => setRegisterUsername(e.target.value)}
+                  sx={{ mb: 2 }}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  type="password"
+                  label="Password"
+                  variant="outlined"
+                  value={registerPassword}
+                  onChange={(e) => setRegisterPassword(e.target.value)}
+                  sx={{ mb: 2 }}
+                  required
+                />
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 1 }}
+                >
+                  Register
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
+  );
 };
 
 export default Login;

@@ -1,90 +1,121 @@
-
-
 'use client';
 import "../globals.css";
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent } from '@mui/material';
+import { Box, Typography, Card, CardContent, CircularProgress, Grid, Pagination } from '@mui/material';
 import axios from 'axios';
 
 export default function EventListPage() {
   const router = useRouter();
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [isClient, setIsClient] = useState(false);
-  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const [totalPages, setTotalPages] = useState(1); // Total number of pages
+  const eventsPerPage = 10; // Number of events per page
 
-  // Set up client-side logic using `window`
-  useEffect(() => {
-    setIsClient(true); // Only set to true once we are on the client
-  }, []);
+  const fetchEvents = async (page) => {
+    try {
+      const storedToken = localStorage.getItem('token');
+      const skip = (page - 1) * eventsPerPage;
+      const limit = eventsPerPage;
 
-  
+      const response = await axios.get('http://localhost:8000/events', {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+        },
+        params: { skip, limit },
+      });
 
-  // Only run the fetch logic once the component is hydrated and we're on the client
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
-    if (isClient) { // Prevent fetching during SSR
-      console.log("Component loaded");
-      const fetchEvents = async () => {
-        try {
-          const response = await fetch('http://localhost:8000/events', {
-            
-            headers: {
-              //'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            }
-          });
-          const data = await response.json();
-          console.log("part of data: ", data);
-          setEvents(data);
-        } catch (error) {
-          console.error('Error fetching events:', error);
-        }
-      };
-
-      fetchEvents();
+      setEvents(response.data.events || response.data);
+      setTotalPages(Math.ceil(response.data.total / eventsPerPage));
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      setError('Failed to fetch events. Please try again later.');
+      setLoading(false);
     }
-  }, [isClient]); // Dependency on `isClient`
-
-  const handleEventClick = (event_id) => {
-    router.push(`/events/${event_id}`);
   };
 
-  if (!isClient) {
-    return <Box>Loading...</Box>; // Prevent rendering SSR content prematurely
+  useEffect(() => {
+    fetchEvents(currentPage);
+  }, [currentPage]);
+
+  const handleEventClick = (eventId) => {
+    router.push(`/events/${eventId}`);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+    setLoading(true); // Set loading state during page change
+  };
+
+  if (loading) {
+    return (
+      <Box className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          加載中...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box className="flex justify-center items-center min-h-screen flex-col">
+        <Typography variant="h6" color="error" sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      </Box>
+    );
   }
 
   return (
-    <Box className="p-6 bg-gray-100 min-h-screen .box-shadow">
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ p: 4, bgcolor: '#f7f7f7', minHeight: '100vh' }}>
+      <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold', mb: 4 }}>
         活動列表
       </Typography>
-      <Box 
-      className="flex justify-center items-center min-h-screen bg-gray-200 .box-shadow"
-      display="flex" flexWrap="wrap" gap={2} >
 
-        <div className="box-shadow">
+      <Grid container spacing={3}>
         {events.map((event) => (
-          <Card
-            className="box-shadow"
-            key={event.event_id}
-            //key="hi"
-            style={{ width: '300px', cursor: 'pointer' }}
-            onClick={() => handleEventClick(event.event_id)}
+          <Grid item xs={12} sm={6} md={4} key={event.event_id}>
+            <Card
+              sx={{
+                boxShadow: 4,
+                borderRadius: 3,
+                overflow: 'hidden',
+                cursor: 'pointer',
+                background: 'linear-gradient(135deg, #f3f4f6, #ffffff)',
+                transition: 'transform 0.3s, box-shadow 0.3s',
+                '&:hover': { transform: 'scale(1.05)', boxShadow: 6 },
+              }}
+              onClick={() => handleEventClick(event.event_id)}
             >
-              
-            <CardContent //Card排版待處理 
-            > 
-              <Typography variant="h5">{event.event_name} </Typography>
-              <Typography variant="body2">{event.event_date} </Typography>
-              <Typography variant="body2">Venue: {event.venue_id}</Typography>
-            </CardContent>
-          </Card>
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                  {event.event_name}
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 1, color: '#555' }}>
+                  <strong>日期:</strong> {new Date(event.event_date).toLocaleDateString()}
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 1, color: '#555' }}>
+                  <strong>地點 ID:</strong> {event.venue_id}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-          </div>
+      </Grid>
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
       </Box>
     </Box>
   );

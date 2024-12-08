@@ -1,46 +1,33 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';  // 使用 next 的 router API
-import { Typography, Button, Box } from '@mui/material';
+import { useRouter, useParams } from 'next/navigation';
+import { Typography, Button, Box, CircularProgress, Paper } from '@mui/material';
 import "../../globals.css";
 
 export default function EventDetailsPage() {
   const router = useRouter();
-  const { event_id } = useParams();  // 從 router.query 中獲取參數
-  console.log("id: ", event_id);
-
+  const { event_id } = useParams(); // Extract the event ID from the URL
   const [eventDetails, setEventDetails] = useState(null);
-  const [isClient, setIsClient] = useState(false);
-  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
 
-  // 只有在客戶端才能進行以下的操作
   useEffect(() => {
-    setIsClient(true);  // 確保在客戶端加載
-  }, []);
-
-  // 請求事件詳細信息
-  useEffect(() => {
-    if (!isClient || !event_id) {
-      return;  // 防止 SSR 時請求並且 event_id 尚未可用
-    }
-
-    const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
-
-    /*
-    if (!storedToken) {
-      console.error("Token is missing");
-      return;
-    }
-    */
+    if (!event_id) return; // Ensure the event_id is available before fetching
 
     const fetchEventDetails = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token is missing');
+          router.push('/login'); // Redirect to login if token is missing
+          return;
+        }
+
         const response = await fetch(`http://localhost:8000/events/${event_id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (!response.ok) {
@@ -48,67 +35,88 @@ export default function EventDetailsPage() {
         }
 
         const data = await response.json();
-        console.log("part of data: ", data);
-        localStorage.setItem('venue_id', data.venue_id);
-        setEventDetails(data); // 更新狀態
+        setEventDetails(data);
+        localStorage.setItem('venue_id', data.venue_id); // Store venue ID in localStorage
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching event details:', error);
+        setError('Failed to load event details. Please try again later.');
+        setLoading(false);
       }
     };
 
     fetchEventDetails();
-  }, [event_id, isClient, token]);
+  }, [event_id, router]);
 
-  // 加載中的狀態
-  if (!eventDetails) {
-    return <Typography>Loading...</Typography>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+        <Typography variant="h6" sx={{ ml: 2 }}>
+          加載中...
+        </Typography>
+      </Box>
+    );
   }
 
-  // 將eventDetails存在localStorage
-  localStorage.setItem('venue_id', eventDetails.venue_id);
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography variant="h6" color="error">
+          {error}
+        </Typography>
+        <Button variant="contained" color="primary" onClick={() => router.push('/events')}>
+          返回活動列表
+        </Button>
+      </Box>
+    );
+  }
 
   return (
-    <div className=".box-shadow">
-      <Box
-        className="flex justify-center items-center min-h-screen bg-gray-100 .box-shadow"
-        style={{
-          borderRadius: '8px',
-          backgroundColor: 'white',
-          padding: '5rem',
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        bgcolor: '#f7f7f7',
+        p: 4,
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          maxWidth: 600,
+          textAlign: 'center',
+          borderRadius: 3,
+          bgcolor: '#ffffff',
         }}
       >
-        <Box 
-          className=".box-shadow"
-          style={{ maxWidth: '600px', textAlign: 'center' 
-        }}
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+          {eventDetails.event_name}
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          <strong>日期:</strong> {new Date(eventDetails.event_date).toLocaleDateString()}
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          <strong>場地:</strong> {eventDetails.venue_id}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+          <strong>描述:</strong> {eventDetails.description}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 4, color: '#555' }}>
+          <strong>狀態:</strong> {eventDetails.status}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={() => router.push(`/events/${event_id}/seats`)}
         >
-          <div>
-            <Typography variant="h4" gutterBottom>
-              {eventDetails.event_name}
-            </Typography>
-            <Typography variant="body1" className="mb-2">
-              {eventDetails.event_date}
-            </Typography>
-            <Typography variant="body1" className="mb-2">
-              Venue: {eventDetails.venue_id}
-            </Typography>
-            <Typography variant="body2" className="mb-4">
-              {eventDetails.description}
-            </Typography>
-            <Typography variant="body2" className="mb-4">
-              status: {eventDetails.status}
-            </Typography>
-
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => router.push(`/events/${event_id}/seats`)}
-            >
-              購買門票
-            </Button>
-          </div>
-        </Box>
-      </Box>
-    </div>
+          購買門票
+        </Button>
+      </Paper>
+    </Box>
   );
 }
