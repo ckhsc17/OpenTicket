@@ -11,7 +11,7 @@ export default function EventDetailsPage() {
   //const searchParams = useSearchParams();
   const { event_id } = useParams();
   const [seats, setSeats] = useState([]);
-  const [selectedSection, setSelectedSection] = useState("Section-1"); // 預設選中的 Section
+  const [selectedSection, setSelectedSection] = useState("Section-0"); // 預設選中的 Section
   const [selectedSeats, setSelectedSeats] = useState([]); // 用戶選擇的座位
   const [lockTimers, setLockTimers] = useState({}); // 記錄每個座位的計時器
   const [isClient, setIsClient] = useState(false);
@@ -62,7 +62,7 @@ export default function EventDetailsPage() {
 
     const fetchSeats = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/events/${event_id}/available_seats`, {
+        const response = await fetch(`http://localhost:8000/events/${event_id}/get_seats`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }

@@ -188,8 +188,8 @@ def create_seat(db: Session, seat: SeatCreate) -> Seat:
 def get_seat(db: Session, seat_id: int) -> Optional[Seat]:
     return db.query(Seat).filter(Seat.seat_id == seat_id).first()
 
-def get_seats(db: Session, venue_id: int, skip: int = 0, limit: int = 100) -> List[Seat]:
-    return db.query(Seat).filter(Seat.venue_id == venue_id).offset(skip).limit(limit).all()
+def get_seats(db: Session, venue_id: int) -> List[Seat]:
+    return db.query(Seat).filter(Seat.venue_id == venue_id).all()
 
 def update_seat(db: Session, venue_id: int, status: str, seat_numbers: List[int]) -> Optional[List[int]]:
     # 查询所有在 seat_numbers 中的座位
