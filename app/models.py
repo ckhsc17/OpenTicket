@@ -144,7 +144,7 @@ class Payment(Base):
     order_id = Column(Integer, ForeignKey("orders.order_id", ondelete="CASCADE"))
     payment_date = Column(DateTime, server_default="CURRENT_TIMESTAMP")
     amount = Column(DECIMAL(10, 2), nullable=False)
-    method = Column(Enum(PaymentMethod), nullable=False)
+    method = Column(Enum(PaymentMethod))
     status = Column(Enum(PaymentStatus), nullable=False, default="Pending")
 
     order = relationship("Order", back_populates="payments")

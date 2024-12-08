@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, Typography, Box, Select, MenuItem, TextField } from '@mui/material';
+import { Button, Typography, Box, Select, MenuItem, TextField, CircularProgress, Paper } from '@mui/material';
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -13,128 +13,113 @@ export default function PaymentPage() {
   const [eventDetails, setEventDetails] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState({});
-  const ticketPrice = 500; // 每張票固定價格
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const ticketPrice = 500; // 固定票價
   const totalAmount = seat_numbers.length * ticketPrice; // 總金額
 
-  // 請求活動資料
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        console.log('Fetching event details:', event_id);
         const response = await fetch(`http://localhost:8000/events/${event_id}`);
         if (!response.ok) throw new Error('Failed to fetch event details');
         const data = await response.json();
         setEventDetails(data);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching event details:', error);
+        setError('無法載入活動資料，請稍後再試。');
+        setLoading(false);
       }
     };
 
     if (event_id) fetchEventDetails();
   }, [event_id]);
 
-  // 處理付款方式選擇
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
-    setPaymentDetails({}); // 重置相關欄位
+    setPaymentDetails({});
   };
 
-  // 確認付款
   const handleConfirmPayment = async () => {
     try {
-      // 
       const paymentData = {
-        order_id: order_id,
+        order_id,
         amount: totalAmount,
         method: paymentMethod,
-        status: "Completed"
+        status: "Completed",
       };
-      // 創建payment row
+
       const response = await fetch('http://localhost:8000/payments', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentData),
       });
 
       if (!response.ok) throw new Error('Failed to confirm payment');
-      
-      console.log('Payment confirmed successfully');
-      
+
       const seatData = {
-        seat_numbers: seat_numbers, // 座位號碼的列表 seatNumbers
-        status: "Sold", // 新的狀態
+        seat_numbers,
+        status: "Sold",
       };
 
-      // 更新座位狀態
-      const response2 = await fetch(`http://localhost:8000/seats/${eventDetails.venue_id}/update_seat`, {
+      await fetch(`http://localhost:8000/seats/${eventDetails.venue_id}/update_seat`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(seatData),
       });
-      console.log('seat update result:', response2);
 
-      // 成功後跳回首頁
+      alert('付款成功！');
       router.push('/');
     } catch (error) {
       console.error('Error confirming payment:', error);
+      alert('付款失敗，請稍後再試！');
     }
   };
 
   const handleCancelPayment = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/orders/${order_id}/cancel`, {
+      await fetch(`http://localhost:8000/orders/${order_id}/cancel`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
-  
-      if (!response.ok) throw new Error('Failed to cancel payment');
-      
+
       const seatData = {
-        seat_numbers: seat_numbers, // 座位號碼的列表 seatNumbers
-        status: "Available", // 新的狀態
+        seat_numbers,
+        status: "Available",
       };
 
-      // 更新座位狀態
-      const response2 = await fetch(`http://localhost:8000/seats/${eventDetails.venue_id}/update_seat`, {
+      await fetch(`http://localhost:8000/seats/${eventDetails.venue_id}/update_seat`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(seatData),
       });
-      console.log('seat update result:', response2);
 
-      // 成功後跳回首頁
-      console.log('Payment canceled successfully');
+      alert('付款已取消。');
       router.push('/');
     } catch (error) {
       console.error('Error canceling payment:', error);
+      alert('取消付款失敗，請稍後再試！');
     }
   };
 
   return (
-    <div className=".box-shadow">
-      <Box 
-        className="flex justify-center items-center min-h-screen bg-gray-100 .box-shadow"
-        style={{
-          borderRadius: '8px',
-          backgroundColor: 'white',
-          padding: '5rem',
-        }}
-      >
-        <Box style={{ maxWidth: '600px', textAlign: 'center' }}>
-          <Typography variant="h4" gutterBottom>
-            付款明細
-          </Typography>
+    <Box className="min-h-screen" sx={{ p: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', bgcolor: '#f7f7f7' }}>
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 2, maxWidth: 600, width: '100%' }}>
+        {loading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Typography color="error" align="center">{error}</Typography>
+        ) : (
+          <>
+            <Typography variant="h4" align="center" gutterBottom>
+              付款明細
+            </Typography>
 
-          {eventDetails ? (
-            <>
+            <Box mb={4}>
               <Typography variant="body1" gutterBottom>
                 <strong>活動名稱：</strong> {eventDetails.event_name}
               </Typography>
@@ -153,14 +138,8 @@ export default function PaymentPage() {
               <Typography variant="body1" gutterBottom>
                 <strong>總金額：</strong> NT${totalAmount}
               </Typography>
-            </>
-          ) : (
-            <Typography variant="body1" gutterBottom>
-              載入活動資料中...
-            </Typography>
-          )}
+            </Box>
 
-          <Box mt={4}>
             <Typography variant="h6" gutterBottom>
               選擇付款方式
             </Typography>
@@ -168,8 +147,10 @@ export default function PaymentPage() {
               value={paymentMethod}
               onChange={(e) => handlePaymentMethodChange(e.target.value)}
               fullWidth
-              style={{ marginBottom: '1rem' }}
+              displayEmpty
+              sx={{ mb: 2 }}
             >
+              <MenuItem value="" disabled>選擇付款方式</MenuItem>
               <MenuItem value="credit_card">信用卡</MenuItem>
               <MenuItem value="bank_transfer">銀行轉帳</MenuItem>
               <MenuItem value="mobile_payment">行動支付</MenuItem>
@@ -179,48 +160,47 @@ export default function PaymentPage() {
               <TextField
                 label="信用卡卡號"
                 fullWidth
+                sx={{ mb: 2 }}
                 onChange={(e) => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value })}
-                style={{ marginBottom: '1rem' }}
               />
             )}
             {paymentMethod === 'bank_transfer' && (
               <TextField
                 label="銀行帳戶"
                 fullWidth
+                sx={{ mb: 2 }}
                 onChange={(e) => setPaymentDetails({ ...paymentDetails, accountNumber: e.target.value })}
-                style={{ marginBottom: '1rem' }}
               />
             )}
             {paymentMethod === 'mobile_payment' && (
               <TextField
                 label="行動支付帳戶"
                 fullWidth
+                sx={{ mb: 2 }}
                 onChange={(e) => setPaymentDetails({ ...paymentDetails, mobileAccount: e.target.value })}
-                style={{ marginBottom: '1rem' }}
               />
             )}
-          </Box>
 
-          <Box mt={4}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleConfirmPayment}
-              disabled={!paymentMethod}
-              style={{ marginRight: '1rem' }}
-            >
-              確認付款
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => handleCancelPayment()}
-            >
-              取消付款
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </div>
+            <Box display="flex" justifyContent="space-between" mt={4}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleConfirmPayment}
+                disabled={!paymentMethod}
+              >
+                確認付款
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleCancelPayment}
+              >
+                取消付款
+              </Button>
+            </Box>
+          </>
+        )}
+      </Paper>
+    </Box>
   );
 }
