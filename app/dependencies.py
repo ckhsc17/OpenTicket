@@ -15,7 +15,7 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 
 from sqlalchemy.orm import Session
-from app.models import User
+from app.models import User, UserRole
 from app.database_connection import get_db
 from app.crud import get_user_by_email, get_user
 
@@ -76,11 +76,10 @@ def create_access_token(username: str, user_id: int, expires_delta: timedelta):
     encode.update({'exp': expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM) # type: ignore
 
-'''
 def check_organizer_role(user: User):
-    if user.role != "Organizer":
+    if str(user.role) != UserRole.Organizer:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only organizers can perform this action")
-'''
+
 def verify_password(plain_password, hashed_password):
     return bcrypt_context.verify(plain_password, hashed_password)
 
