@@ -1,115 +1,88 @@
-//待修改
-/*
-"use client";
-
-import React, { useContext, useState, useEffect } from 'react';
-import AuthContext from './context/AuthContext';
-
-import ProtectedRoute from './components/ProtectedRoute';
-import axios from 'axios';
-
-import Icon from '@mui/material/Icon';
-
-const Home = () => {
-  const { user, logout } = useContext(AuthContext);
-  const [token, setToken] = useState(null); // <-- This line should be here
-  //const token = localStorage.getItem('token');
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
-
-    const fetchEvents = async () => {
-      try {
-        const token = localStorage.getItem('token'); 
-        const [workoutsResponse, routinesResponse] = await Promise.all([
-          axios.get('http://localhost:8000/events', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        //setWorkouts(workoutsResponse.data);
-        //setRoutines(routinesResponse.data);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      }
-      print("hi from fetchEvents")
-    };
-
-    fetchEvents();
-  }, []);
-
-  return (
-    <ProtectedRoute>
-      <div className="container">
-        <h1>Welcome!</h1>
-        
-
-        <Icon>star</Icon> 
-        <button onClick={logout} className="btn btn-danger">Logout</button>
-
-        <h2>Events List</h2>
-      </div>
-    </ProtectedRoute>
-  );
-};
-
-export default Home;
-*/
-
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, Paper, Divider } from '@mui/material';
 
 export default function HomePage() {
-  const router = useRouter();
+    const router = useRouter();
 
-  return (
-    <Box className="p-6 bg-gray-100 min-h-screen">
-      <Typography variant="h3" gutterBottom>
-        活動管理系統
-      </Typography>
-      <Box display="flex" flexDirection="column" gap={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => router.push('/events')}
+    return (
+        <Box
+            sx={{
+                p: 6,
+                bgcolor: '#f3f4f6',
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
         >
-          查看活動列表
-        </Button>
-        <Button //待修改
-          variant="contained"
-          color="primary"
-          onClick={() => router.push('/create_event')}
-        >
-          創建新活動
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => router.push('/me')}
-        >
-          Me
-        </Button>
-
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => router.push('/organizer')}
-        >
-          組織者
-        </Button>
-        
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => router.push('/about')}
-        >
-          關於我們
-        </Button>
-        
-      </Box>
-    </Box>
-  );
+            <Paper
+                elevation={4}
+                sx={{
+                    p: 4,
+                    maxWidth: 600,
+                    width: '100%',
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    background: 'linear-gradient(135deg, #ffffff, #f7f8fa)',
+                }}
+            >
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
+                    TicketEase 活動訂票系統
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 4, color: '#555' }}>
+                    管理和查看活動，創建新的活動，並訪問其他功能。
+                </Typography>
+                <Divider sx={{ mb: 4 }} />
+                <Box display="flex" flexDirection="column" gap={2}>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        sx={{ py: 1.5, backgroundColor: '#1976d2' }}
+                        onClick={() => router.push('/events')}
+                    >
+                        查看活動列表
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        sx={{ py: 1.5, backgroundColor: '#43a047' }}
+                        onClick={() => router.push('/create_event')}
+                    >
+                        創建新活動
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        sx={{ py: 1.5, backgroundColor: '#0288d1' }}
+                        onClick={() => router.push('/me')}
+                    >
+                        個人資料與訂單
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        sx={{ py: 1.5, backgroundColor: '#7b1fa2' }}
+                        onClick={() => router.push('/organizer')}
+                    >
+                        活動組織者
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        sx={{
+                            py: 1.5,
+                            backgroundColor: '#d32f2f',
+                            '&:hover': { backgroundColor: '#c62828' },
+                        }}
+                        onClick={() => router.push('/admin')}
+                    >
+                        Admin
+                    </Button>
+                </Box>
+            </Paper>
+        </Box>
+    );
 }

@@ -274,6 +274,9 @@ def create_order(db: Session, order: OrderCreate) -> Order:
 def get_order(db: Session, order_id: int) -> Optional[Order]:
     return db.query(Order).filter(Order.order_id == order_id).first()
 
+def get_orders_by_event(db: Session, event_id: int) -> List[Order]:
+    return db.query(Order).join(Ticket).filter(Ticket.event_id == event_id).all()
+
 def get_orders_list(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[Order]:
     return db.query(Order).filter(Order.user_id == user_id).offset(skip).limit(limit).all()
 
