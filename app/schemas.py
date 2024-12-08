@@ -1,13 +1,8 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import date, datetime
-from app.models import OrderStatus, PaymentStatus, PaymentMethod
+from app.models import OrderStatus, PaymentStatus, PaymentMethod, UserRole
 import enum
-
-class UserRole(str, enum.Enum):
-    user = "User"
-    urganizer = "Organizer"
-    admin = "Admin"
 
 class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
