@@ -5,9 +5,9 @@ from datetime import date, datetime
 import enum
 
 class UserRole(str, enum.Enum):
-    User = "User"
-    Organizer = "Organizer"
-    Admin = "Admin"
+    user = "User"
+    urganizer = "Organizer"
+    admin = "Admin"
 
 class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)

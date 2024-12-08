@@ -95,19 +95,57 @@ export default function EventDetailsPage() {
   };
 
   // 設置座位的狀態
-  const updateSeatStatus = (seatNumber, status) => {
+  const updateSeatStatus = async (seatNumbers, status) => {
+    // 更新前端座位狀態
     setSeats((prevSeats) =>
       prevSeats.map((seat) =>
-        seat.seat_number === seatNumber ? { ...seat, status } : seat
+        seatNumbers.includes(seat.seat_number) ? { ...seat, status } : seat
       )
     );
+
+    console.log("seatNumbers: ", seatNumbers);
+
+    // 構建更新的座位資料
+    const seatData = {
+      seat_numbers: seatNumbers, // 座位號碼的列表 seatNumbers
+      status: status, // 新的狀態
+    };
+
+    console.log("Sending seatData: ", seatData);
+    console.log("venue_id: ", localStorage.getItem('venue_id'));
+
+    try {
+      // 發送請求到後端
+      const response = await fetch(
+        `http://localhost:8000/seats/${localStorage.getItem('venue_id')}/update_seat`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(seatData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        console.error("Error updating seats:", errorMessage);
+        alert("更新座位狀態失敗，請稍後再試。");
+      } else {
+        console.log("Seats updated successfully.");
+        alert("座位狀態已成功更新！");
+      }
+    } catch (error) {
+      console.error("Error updating seats:", error);
+      alert("更新座位時出現錯誤，請檢查網路連線或稍後再試。");
+    }
   };
 
   // 用戶點擊座位
   const handleSeatClick = (seatNumber) => {
     const selectedSeat = seats.find((seat) => seat.seat_number === seatNumber);
 
-    if (!selectedSeat || selectedSeat.status !== "Available") return;
+    if (!selectedSeat || selectedSeat._status !== "Available") return;
     setSelectedSeats([...selectedSeats, seatNumber]);
     // 更新座位狀態為 Reserved
     /*待測試
@@ -127,10 +165,12 @@ export default function EventDetailsPage() {
   // 確認選位，在這時候才真正的lock座位
   const handleConfirmSeats = async () => {
     // 檢查選擇的座位是否都處於 Available 狀態
+    console.log("Selected Seats:", selectedSeats);
     const unavailableSeats = selectedSeats.filter((seatNumber) => {
       const selectedSeat = seats.find((seat) => seat.seat_number === seatNumber);
-      return selectedSeat && selectedSeat.status !== "Available";
+      return selectedSeat && selectedSeat._status !== "Available";
     });
+    console.log("Unavailable Seats:", unavailableSeats);
   
     // 如果有座位不是 Available，顯示錯誤訊息並退出
     if (unavailableSeats.length > 0) {
@@ -146,7 +186,7 @@ export default function EventDetailsPage() {
       user_id: localStorage.getItem('user_id'), // 假設使用者 ID
       total_amount: selectedSeats.length * 500, // 假設每個座位 500 單位的價格，這邊可以根據實際需求來計算
       order_date: new Date().toISOString(), // 訂單日期
-      status: "Pending", // 訂單狀態
+      status: "pending", // 訂單狀態
       //seat_numbers: selectedSeats.join(", "), // 所有選擇的座位號
     };
 
@@ -161,6 +201,7 @@ export default function EventDetailsPage() {
           "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(orderData),
+        //mode: 'no-cors'
         
       });
       console.log("orderData: ", orderData);
@@ -218,8 +259,9 @@ export default function EventDetailsPage() {
       console.log("Ticket created successfully:", data);
 
       //迭代每個selectedSeats，更新狀態為Reserved
-      selectedSeats.forEach((seatNumber) => updateSeatStatus(seatNumber, "Reserved"));
-      
+      //selectedSeats.forEach((seatNumber) => updateSeatStatus(seatNumber, "Reserved"));
+      updateSeatStatus(selectedSeats, "Reserved");
+
       /*
       // 啟動 5 分鐘倒計時
       const timer = setTimeout(() => {
@@ -240,8 +282,8 @@ export default function EventDetailsPage() {
 
 
   // 根據狀態渲染顏色
-  const getSeatColor = (status) => {
-    switch (status) {
+  const getSeatColor = (_status) => {
+    switch (_status) {
       case "Available":
         return "green";
       case "Reserved":
@@ -287,9 +329,9 @@ export default function EventDetailsPage() {
             sx={{
               width: "20px",
               height: "20px",
-              backgroundColor: getSeatColor(seat.status),
+              backgroundColor: getSeatColor(seat._status),
               border: selectedSeats.includes(seat.seat_number) ? "2px solid blue" : "1px solid black",
-              cursor: seat.status === "Available" ? "pointer" : "not-allowed",
+              cursor: seat._status === "Available" ? "pointer" : "not-allowed",
             }}
             onClick={() => handleSeatClick(seat.seat_number)}
           />

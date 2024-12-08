@@ -50,7 +50,7 @@ export default function EventDetailsPage() {
         const data = await response.json();
         console.log("part of data: ", data);
         localStorage.setItem('venue_id', data.venue_id);
-        setEventDetails(data);
+        setEventDetails(data); // 更新狀態
       } catch (error) {
         console.error('Error fetching event details:', error);
       }
@@ -63,6 +63,9 @@ export default function EventDetailsPage() {
   if (!eventDetails) {
     return <Typography>Loading...</Typography>;
   }
+
+  // 將eventDetails存在localStorage
+  localStorage.setItem('venue_id', eventDetails.venue_id);
 
   return (
     <div className=".box-shadow">

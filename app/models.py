@@ -9,9 +9,9 @@ from sqlalchemy.orm import relationship
 from app.database_connection import Base
 
 class UserRole(str, enum.Enum):
-    User = "User"
-    Organizer = "Organizer"
-    Admin = "Admin"
+    user = "User"
+    organizer = "Organizer"
+    admin = "Admin"
 
 class User(Base):
     __tablename__ = "users"
@@ -56,6 +56,11 @@ class Venue(Base):
     events = relationship("Event", back_populates="venue")
     seats = relationship("Seat", back_populates="venue")
 
+class SeatStatus(str, enum.Enum):
+    Available = "Available"
+    Reserved = "Reserved"
+    Sold = "Sold"
+
 class Seat(Base):
     __tablename__ = "seats"
     #seat_id = Column(Integer, primary_key=True, index=True)
@@ -64,8 +69,16 @@ class Seat(Base):
     row = Column(String(5))
     seat_number = Column(String(5), primary_key=True)
     seat_type = Column(String(20))
-    #type = Column(String(20))
-    status = Column(String(20), default="Available")
+    _status = Column("status", String(20), default="Available")  # 使用下划线避免冲突
+    '''
+    @property
+    def status(self) -> str:
+        return self._status
+
+    @status.setter
+    def status(self, value: str):
+        self._status = value
+       ''' 
 
     venue = relationship("Venue", back_populates="seats")
     ticket = relationship("Ticket", back_populates="seat", uselist=False)
@@ -94,9 +107,9 @@ class Ticket(Base):
     order = relationship("Order", back_populates="tickets")
 
 class OrderStatus(str, enum.Enum):
-    pending = "pending"
-    paid = "paid"
-    canceled = "canceled"
+    pending = "Pending"
+    paid = "Paid"
+    canceled = "Canceled"
 
 class Order(Base):
     __tablename__ = "orders"
@@ -104,7 +117,7 @@ class Order(Base):
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"))
     total_amount = Column(DECIMAL(10, 2), nullable=False)
     order_date = Column(DateTime, server_default="CURRENT_TIMESTAMP")
-    status = Column(Enum(OrderStatus), default="Pending")
+    status = Column(Enum(OrderStatus), default="pending")
 
     user = relationship("User")
     payments = relationship("Payment", back_populates="order")

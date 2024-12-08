@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from app.models import User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus
 from app.schemas import (
     UserCreate, UserOut, EventCreate, EventOut,
@@ -9,6 +10,7 @@ from app.schemas import (
 from passlib.context import CryptContext
 from typing import List, Optional
 from datetime import datetime
+from fastapi import HTTPException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -189,17 +191,32 @@ def get_seat(db: Session, seat_id: int) -> Optional[Seat]:
 def get_seats(db: Session, venue_id: int, skip: int = 0, limit: int = 100) -> List[Seat]:
     return db.query(Seat).filter(Seat.venue_id == venue_id).offset(skip).limit(limit).all()
 
-def update_seat(db: Session, seat_id: int, seat_update: SeatCreate) -> Optional[Seat]:
-    seat = db.query(Seat).filter(Seat.seat_id == seat_id).first()
-    if not seat:
-        return None
+def update_seat(db: Session, venue_id: int, status: str, seat_numbers: List[int]) -> Optional[List[int]]:
+    # 查询所有在 seat_numbers 中的座位
+    # 查詢符合 venue_id 和 seat_number 的座位
+    seats = db.query(Seat).filter(
+        and_(Seat.venue_id == venue_id, Seat.seat_number.in_(seat_numbers))
+    ).all()
+    print("hi from update seat")
+    print(len(seats))
+    print(type(seats))
+    print(seats[0]._status)
+    if not seats:
+        return None  # 如果没有找到对应的座位
     
-    for key, value in seat_update.model_dump(exclude_unset=True).items():
-        setattr(seat, key, value)
+    updated_seats = []
+    for seat in seats:
+        print(seat.seat_number)
+        seat._status = status  # 更新每个座位的 status
+        print(seat._status)
+        updated_seats.append({"seat_id": seat.venue_id, "status": status})  # 保存更新信息
     
-    db.commit()
-    db.refresh(seat)
-    return seat
+    db.commit()  # 提交更改
+    # Refresh each seat to ensure updated data is loaded
+    for seat in seats:
+        db.refresh(seat)
+    
+    return updated_seats  # 返回更新后的座位信息
 
 def delete_seat(db: Session, seat_id: int) -> bool:
     seat = db.query(Seat).filter(Seat.seat_id == seat_id).first()
@@ -280,9 +297,10 @@ def get_orders(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> Li
 def update_order(db: Session, order_id: int, status: str) -> Optional[Order]:
     order = db.query(Order).filter(Order.order_id == order_id).first()
     if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
         return None
     
-    setattr(order, 'status', status)
+    setattr(order, 'status', status) # (object, attribute, value)
     db.commit()
     db.refresh(order)
     return order
