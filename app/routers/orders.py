@@ -33,7 +33,7 @@ def get_orders_by_event(event_id: int, db: Session = Depends(get_db)):
 
 @router.post("/orders", response_model=OrderOut, tags=["Orders"])
 def create_order_for_user(order: OrderCreate, db: Session = Depends(get_db)):
-
+    print("hi from create_order_for_user")
     # check if user is in the database
     user = db.query(User).filter(User.user_id == order.user_id).first()
     if not user:
@@ -41,6 +41,7 @@ def create_order_for_user(order: OrderCreate, db: Session = Depends(get_db)):
     
     print("order", order)
     new_order = create_order(db, order)
+    print("new_order", new_order.order_id)
     return new_order
 
 # cancel an order

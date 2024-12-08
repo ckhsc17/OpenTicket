@@ -144,11 +144,13 @@ class OrderBase(BaseModel):
     status: Optional[OrderStatus] = OrderStatus.Pending
 
 class OrderCreate(OrderBase):
+    user_id: int
     total_amount: float #先手動加入，之後會根據所選位子、張數自動計算價格
     order_date: datetime = datetime.now()
     status: Optional[OrderStatus] = OrderStatus.Pending
 
 class OrderOut(OrderBase):
+    order_id: int
     order_date: datetime
 
     class Config:
@@ -162,7 +164,10 @@ class PaymentBase(BaseModel):
     payment_date: datetime = datetime.now()
     
 class PaymentCreate(PaymentBase):
-    pass
+    order_id: int
+    amount: float
+    method: Optional[PaymentMethod]
+    status: PaymentStatus = PaymentStatus.Pending
 
 class PaymentOut(PaymentBase):
     payment_id: int

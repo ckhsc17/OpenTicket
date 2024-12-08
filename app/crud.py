@@ -10,6 +10,7 @@ from passlib.context import CryptContext
 from typing import List, Optional
 from datetime import datetime
 from fastapi import HTTPException
+from sqlalchemy import and_
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

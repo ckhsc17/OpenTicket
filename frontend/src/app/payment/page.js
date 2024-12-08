@@ -151,12 +151,12 @@ export default function PaymentPage() {
               sx={{ mb: 2 }}
             >
               <MenuItem value="" disabled>選擇付款方式</MenuItem>
-              <MenuItem value="credit_card">信用卡</MenuItem>
-              <MenuItem value="bank_transfer">銀行轉帳</MenuItem>
-              <MenuItem value="mobile_payment">行動支付</MenuItem>
+              <MenuItem value="Credit Card">信用卡</MenuItem>
+              <MenuItem value="Bank Transfer">銀行轉帳</MenuItem>
+              <MenuItem value="PayPal">行動支付</MenuItem>
             </Select>
 
-            {paymentMethod === 'credit_card' && (
+            {paymentMethod === 'Credit Card' && (
               <TextField
                 label="信用卡卡號"
                 fullWidth
@@ -164,7 +164,7 @@ export default function PaymentPage() {
                 onChange={(e) => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value })}
               />
             )}
-            {paymentMethod === 'bank_transfer' && (
+            {paymentMethod === 'Bank Transfer' && (
               <TextField
                 label="銀行帳戶"
                 fullWidth
@@ -172,7 +172,7 @@ export default function PaymentPage() {
                 onChange={(e) => setPaymentDetails({ ...paymentDetails, accountNumber: e.target.value })}
               />
             )}
-            {paymentMethod === 'mobile_payment' && (
+            {paymentMethod === 'PayPal' && (
               <TextField
                 label="行動支付帳戶"
                 fullWidth
