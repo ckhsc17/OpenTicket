@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
-from app.models import User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus
+from app.models import User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus, PaymentStatus
 from app.schemas import (
     UserCreate, UserOut, EventCreate, EventOut,
     VenueCreate, VenueOut, SeatCreate, SeatOut,
@@ -297,7 +296,7 @@ def get_orders_by_event(db: Session, event_id: int) -> List[Order]:
 def get_orders_list(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[Order]:
     return db.query(Order).filter(Order.user_id == user_id).offset(skip).limit(limit).all()
 
-def update_order(db: Session, order_id: int, status: str) -> Optional[Order]:
+def update_order(db: Session, order_id: int, status: OrderStatus) -> Optional[Order]:
     order = db.query(Order).filter(Order.order_id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -318,49 +317,60 @@ def delete_order(db: Session, order_id: int) -> bool:
 
 # --- 付款 CRUD 操作 ---
 
-def create_payment(db: Session, payment: PaymentCreate) -> Payment:
-    db_payment = Payment(
-        order_id=payment.order_id,
-        amount=payment.amount,
-        method=payment.method,
-        status=payment.status,
-        payment_date=datetime.now() # 邏輯上付款時間應該是付款當下，但這裡先設定為 function 執行時間
-    )
-    db.add(db_payment)
-    db.commit()
-    db.refresh(db_payment)
-
-    # 更新訂單狀態時保留原有訂單的資料
-    order = get_order(db, payment.order_id)
-    if order:
-        update_order(db, payment.order_id, OrderStatus.Paid)
-    
-    return db_payment
-
 def get_payment(db: Session, payment_id: int) -> Optional[Payment]:
     return db.query(Payment).filter(Payment.payment_id == payment_id).first()
 
 def get_payments(db: Session, order_id: int, skip: int = 0, limit: int = 100) -> List[Payment]:
     return db.query(Payment).filter(Payment.order_id == order_id).offset(skip).limit(limit).all()
 
-def update_payment(db: Session, payment_id: int, payment_update: PaymentCreate) -> Optional[Payment]:
-    payment = db.query(Payment).filter(Payment.payment_id == payment_id).first()
+def create_payment(db: Session, payment: PaymentCreate) -> Payment:
+    db_payment = Payment(
+        order_id=payment.order_id,
+        amount=payment.amount,
+        method=payment.method,
+        status=PaymentStatus.Pending,
+        payment_date=datetime.now()
+    )
+    db.add(db_payment)
+    db.commit()
+    db.refresh(db_payment)
+    return db_payment
+
+def confirm_payment(db: Session, payment_id: int) -> Optional[Payment]:
+    payment = get_payment(db, payment_id)
     if not payment:
         return None
     
-    for key, value in payment_update.model_dump(exclude_unset=True).items():
-        setattr(payment, key, value)
+    order = get_order(db, int(payment.order_id))
+    if order is None or str(order.status) != str(OrderStatus.Pending):
+        return None
+
+    setattr(payment, 'status', PaymentStatus.Completed)
+    setattr(payment, 'payment_date', datetime.now())
+    
+    update_order(db, int(payment.order_id), OrderStatus.Paid)
     
     db.commit()
     db.refresh(payment)
     return payment
 
-def delete_payment(db: Session, payment_id: int) -> bool:
-    payment = db.query(Payment).filter(Payment.payment_id == payment_id).first()
+def cancel_payment(db: Session, payment_id: int) -> Optional[Payment]:
+    payment = get_payment(db, payment_id)
     if not payment:
-        return False
-    db.delete(payment)
+        return None
+    
+    order = get_order(db, int(payment.order_id))
+    if order is None:
+        return None
+
+    setattr(payment, 'status', PaymentStatus.Canceled)
+    setattr(payment, 'payment_date', datetime.now())
+    
+    update_order(db, int(payment.order_id), OrderStatus.Canceled)
+    
     db.commit()
+    db.refresh(payment)
+    return payment
     return True
 
 

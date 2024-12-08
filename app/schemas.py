@@ -1,7 +1,7 @@
-from ssl import create_default_context
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import date, datetime
+from app.models import OrderStatus, PaymentStatus, PaymentMethod
 import enum
 
 class UserRole(str, enum.Enum):
@@ -147,7 +147,7 @@ class OrderCreate(OrderBase):
     user_id: int
     total_amount: float #先手動加入，之後會根據所選位子、張數自動計算價格
     order_date: datetime = datetime.now()
-    status: Optional[str] = "Pending"
+    status: str = OrderStatus.Pending
 
 class OrderOut(OrderBase):
     order_id: int
@@ -159,18 +159,15 @@ class OrderOut(OrderBase):
 class PaymentBase(BaseModel):
     order_id: int
     amount: float
-    method: str
-    status: Optional[str] = "Completed"
-
+    method: Optional[PaymentMethod]
+    status: PaymentStatus = PaymentStatus.Pending
+    payment_date: datetime = datetime.now()
+    
 class PaymentCreate(PaymentBase):
-    order_id: int
-    amount: float
-    method: str
-    status: Optional[str] = "Completed"
+    pass
 
 class PaymentOut(PaymentBase):
     payment_id: int
-    payment_date: datetime
 
     class Config:
         from_attributes = True 
