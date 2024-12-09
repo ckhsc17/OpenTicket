@@ -124,7 +124,7 @@ export default function HomePage() {
                     <Button
                         variant="contained"
                         size="large"
-                        sx={{ py: 1.5, backgroundColor: '#93acb5' }}
+                        sx={{ py: 1.5, backgroundColor: '#76837e' }}
                         onClick={() => router.push('/create_event')}
                     >
                         創建新活動
@@ -132,7 +132,7 @@ export default function HomePage() {
                     <Button
                         variant="contained"
                         size="large"
-                        sx={{ py: 1.5, backgroundColor: '#95b9d6' }}
+                        sx={{ py: 1.5, backgroundColor: '#809190' }}
                         onClick={() => router.push('/me')}
                     >
                         個人資料與訂單
@@ -140,7 +140,7 @@ export default function HomePage() {
                     <Button
                         variant="contained"
                         size="large"
-                        sx={{ py: 1.5, backgroundColor: '#96bfe7' }}
+                        sx={{ py: 1.5, backgroundColor: '#93acb5' }}
                         onClick={() => router.push('/organizer')}
                     >
                         活動組織者
@@ -150,8 +150,7 @@ export default function HomePage() {
                         size="large"
                         sx={{
                             py: 1.5,
-                            backgroundColor: '#d32f2f',
-                            '&:hover': { backgroundColor: '#96c5f7' },
+                            backgroundColor: '#95b9d6'
                         }}
                         onClick={() => router.push('/admin')}
                     >
