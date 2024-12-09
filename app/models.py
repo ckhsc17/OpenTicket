@@ -69,22 +69,10 @@ class Seat(Base):
     __tablename__ = "seats"
     venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="CASCADE"), primary_key=True)
     seat_number = Column(String(5), primary_key=True)
-
     section = Column(String(20))
     row = Column(String(5))
-    seat_number = Column(String(5), primary_key=True)
     seat_type = Column(String(20))
     _status = Column("status", String(20), default="Available")  # 使用下划线避免冲突
-    '''
-    @property
-    def status(self) -> str:
-        return self._status
-
-    @status.setter
-    def status(self, value: str):
-        self._status = value
-       ''' 
-
     venue = relationship("Venue", back_populates="seats")
     ticket = relationship("Ticket", back_populates="seat", uselist=False)
 
