@@ -10,17 +10,22 @@ from app.database_connection import get_db
 router = APIRouter()
 
 #情境：使用者選擇活動，查看活動座位
-@router.get("/events/{event_id}/seats", tags=["Tickets"])
+@router.get("/events/{event_id}/seats", tags=["Tickets"]) 
 def get_available_seats(event_id: int, db: Session = Depends(get_db)):
+
     print("hi from get_available_seats")
     event = db.query(Event).filter(Event.event_id == event_id).first()
+
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     print("event", event)
+
     venue_id = event.venue_id
     print("venue_id", venue_id)
+
     seats = db.query(Seat).filter(
         Seat.venue_id == venue_id,
+        Seat.status == "Available"
     ).all()
     return seats
 
@@ -38,6 +43,7 @@ def get_designated_seats(event_id: int, seat_number: int, db: Session = Depends(
     
     return seats
 '''
+
 # Get a user's ticket
 @router.get("/tickets/{user_id}", tags=["Tickets"])
 def get_tickets_by_user(user_id: int, db: Session = Depends(get_db)):

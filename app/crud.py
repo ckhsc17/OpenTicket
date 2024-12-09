@@ -89,9 +89,8 @@ def get_event(db: Session, event_id: int) -> Optional[Event]:
     return db.query(Event).filter(Event.event_id == event_id).first()
 
 def get_events(db: Session, skip: int = 0, limit: int = 100) -> List[Event]:
-    all_events = db.query(Event).offset(skip).limit(limit).all()
-    upcoming_events = [event for event in all_events if event.event_date >= datetime.now()]
-    return upcoming_events
+    current_time = datetime.now()
+    return db.query(Event).filter(Event.event_date >= current_time).offset(skip).limit(limit).all()
 
 # 參加活動
 def join_event(db: Session, event_id: int, user_id: int):
