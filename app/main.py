@@ -12,7 +12,7 @@ from app.routers import analytics, auth, events, tickets, orders, payments, seat
 
 # 創建 FastAPI 應用實例，並設置應用的標題
 app = FastAPI(
-    title="TicketEase 活動訂票系統",
+    title="OpenTicket API",
     description="一個用於管理和購買活動票券的後端服務。",
     version="1.0.0"
 )
@@ -38,7 +38,7 @@ app.add_middleware(
 # 定義根路由，提供簡單的健康檢查或歡迎訊息
 @app.get("/")
 async def read_root():
-    return {"message": "Welcome to TicketEase API"}
+    return {"message": "Welcome to OpenTicket API"}
 
 # 定義一個健康檢查路由
 @app.get("/health")
