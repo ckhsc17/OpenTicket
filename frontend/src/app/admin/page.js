@@ -36,6 +36,7 @@ export default function AdminInterfacePage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [eventDetails, setEventDetails] = useState(null);
 
     const eventsPerPage = 10;
 

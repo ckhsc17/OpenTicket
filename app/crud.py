@@ -274,6 +274,9 @@ def delete_ticket(db: Session, ticket_id: int) -> bool:
     db.commit()
     return True
 
+def get_ticket_by_ticket_id(db: Session, ticket_id: int) -> Optional[Ticket]:
+    return db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
+
 # --- 訂單 CRUD 操作 ---
 
 def create_order(db: Session, order: OrderCreate) -> Order:

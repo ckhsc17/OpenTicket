@@ -52,7 +52,7 @@ export default function CreateEventPage() {
 
             setSuccess('Event created successfully!');
             setTimeout(() => {
-                router.push('/events'); // Redirect to event list page
+                router.push('/');
             }, 2000);
         } catch (err) {
             console.error('Error creating event:', err);
@@ -142,7 +142,7 @@ export default function CreateEventPage() {
                         <Button
                             type="button"
                             variant="outlined"
-                            onClick={() => router.push('/events')}
+                            onClick={() => router.push('/')}
                         >
                             Cancel
                         </Button>

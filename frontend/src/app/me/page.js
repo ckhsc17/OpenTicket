@@ -12,6 +12,7 @@ import {
     CircularProgress,
 } from "@mui/material";
 import { CheckCircle, Error } from "@mui/icons-material";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function EventListPage() {
     const router = useRouter();
@@ -206,13 +207,13 @@ export default function EventListPage() {
                                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
                                         Status:{" "}
                                         {order.status === "Paid" ? (
-                                            <CheckCircle
-                                                sx={{ color: "green", verticalAlign: "middle" }}
-                                            />
+                                            <Tooltip title="Paid">
+                                                <CheckCircle sx={{ color: "green", verticalAlign: "middle" }} />
+                                            </Tooltip>
                                         ) : (
-                                            <Error
-                                                sx={{ color: "red", verticalAlign: "middle" }}
-                                            />
+                                            <Tooltip title="Not Paid">
+                                                <Error sx={{ color: "red", verticalAlign: "middle" }} />
+                                            </Tooltip>
                                         )}
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -266,6 +267,24 @@ export default function EventListPage() {
                                             ${ticket.price}
                                         </span>
                                     </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        Venue ID:{" "}
+                                        <span style={{ fontWeight: "normal" }}>
+                                            {ticket.venue_id}
+                                        </span>
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        Seat Number:{" "}
+                                        <span style={{ fontWeight: "normal" }}>
+                                            {ticket.seat_number}
+                                        </span>
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                        Type:{" "}
+                                        <span style={{ fontWeight: "normal" }}>
+                                            {ticket.type}
+                                        </span>
+                                    </Typography>
                                 </CardContent>
                             </Card>
                         ))
@@ -305,13 +324,17 @@ export default function EventListPage() {
                                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
                                         Status:{" "}
                                         {payment.status === "Completed" ? (
-                                            <CheckCircle
-                                                sx={{ color: "green", verticalAlign: "middle" }}
-                                            />
+                                            <Tooltip title="Completed">
+                                                <CheckCircle
+                                                    sx={{ color: "green", verticalAlign: "middle" }}
+                                                />
+                                            </Tooltip>
                                         ) : (
-                                            <Error
-                                                sx={{ color: "red", verticalAlign: "middle" }}
-                                            />
+                                            <Tooltip title="Pending">
+                                                <Error
+                                                    sx={{ color: "red", verticalAlign: "middle" }}
+                                                />
+                                            </Tooltip>
                                         )}
                                     </Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 500 }}>

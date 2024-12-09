@@ -19,6 +19,9 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [registerUsername, setRegisterUsername] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [role, setRole] = useState('User');
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -35,7 +38,11 @@ const Login = () => {
     try {
       await axios.post('http://localhost:8000/auth/register', {
         username: registerUsername,
+        email: email,
+        phone: phone,
+        created_at: new Date().toISOString(),
         password: registerPassword,
+        role: role,
       });
       login(registerUsername, registerPassword);
     } catch (error) {
@@ -123,6 +130,24 @@ const Login = () => {
                   variant="outlined"
                   value={registerUsername}
                   onChange={(e) => setRegisterUsername(e.target.value)}
+                  sx={{ mb: 2 }}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{ mb: 2 }}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  variant="outlined"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   sx={{ mb: 2 }}
                   required
                 />
