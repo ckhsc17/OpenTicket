@@ -3,7 +3,6 @@ dependencies.py 模組包含了 FastAPI 應用中的依賴項，實作了用戶�
 """
 
 import os
-from typing import Annotated
 from typing import List
 from dotenv import load_dotenv 
 from datetime import datetime, timedelta, timezone

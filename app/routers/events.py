@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.schemas import EventCreate, EventOut
-from app.dependencies import get_current_user
-from app.crud import delete_event, get_event, get_events, create_event, update_event
 from sqlalchemy.orm import Session
-from app.database_connection import get_db
-from dotenv import load_dotenv
 from typing import List
 
-load_dotenv() # 載入 .env 檔案
+from app.schemas import EventCreate, EventOut
+from app.crud import get_event, get_events, create_event, update_event
+from app.database_connection import get_db
+from app.dependencies import get_current_user
 
 router = APIRouter()
 

@@ -1,24 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from app.dependencies import get_current_user
-from app.schemas import TicketCreate, OrderCreate, EventOut, UserOut
-from app.models import Event, Ticket, Order
-from app.crud import create_tickets, create_order, update_seat, get_seats
-from app.routers.tickets import get_designated_seats
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database_connection import get_db
 from pydantic import BaseModel
 from typing import List
 
-from pydantic import BaseModel
-from typing import List
+from app.dependencies import get_current_user
+from app.schemas import TicketCreate, OrderCreate
+from app.models import Event
+from app.crud import create_tickets, create_order, update_seat, get_seats
+from app.routers.tickets import get_designated_seats
+from app.database_connection import get_db
+
 
 class SeatUpdateRequest(BaseModel):
     seat_numbers: List[int]
     status: str
 
-
 router = APIRouter()
-
 
 # Search for available seats by event
 @router.get("/events/{event_id}/get_seats", tags=["Seats"])

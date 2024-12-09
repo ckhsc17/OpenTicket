@@ -1,10 +1,7 @@
-from typing import Annotated
-from dotenv import load_dotenv
-from datetime import timedelta
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from datetime import timedelta
 
 from app.schemas import UserCreate, UserOut
 from app.models import User
@@ -18,8 +15,6 @@ from app.dependencies import (
     Token,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
-
-load_dotenv() # 載入 .env 檔案
 
 router = APIRouter(
     prefix="/auth",
