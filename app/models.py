@@ -7,6 +7,7 @@ import enum
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Date, DateTime, Enum, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 from app.database_connection import Base
+from sqlalchemy import Enum as SQLAlchemyEnum
 
 class UserRole(str, enum.Enum):
     User = "User"
@@ -72,7 +73,7 @@ class Seat(Base):
     section = Column(String(20))
     row = Column(String(5))
     seat_type = Column(String(20))
-    _status = Column("status", String(20), default="Available")  # 使用下划线避免冲突
+    _status = Column("status", SQLAlchemyEnum(SeatStatus), default=SeatStatus.Available)  # 使用 SQLAlchemy 的 Enum
     venue = relationship("Venue", back_populates="seats")
     ticket = relationship("Ticket", back_populates="seat", uselist=False)
 
