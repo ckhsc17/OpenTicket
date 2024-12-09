@@ -315,8 +315,8 @@ export default function EventDetailsPage() {
             sx={{ mt: 1, minWidth: '200px' }}
           >
             {[...Array(10)].map((_, i) => (
-              <MenuItem key={i} value={`Section-${i + 1}`}>
-                Section-{i + 1}
+              <MenuItem key={i} value={`Section-${i}`}>
+                Section-{i}
               </MenuItem>
             ))}
           </Select>

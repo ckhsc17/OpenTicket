@@ -6,7 +6,7 @@ from typing import List
 
 from app.dependencies import get_current_user
 from app.schemas import TicketCreate, OrderCreate
-from app.models import Event
+from app.models import Event, SeatStatus
 from app.crud import create_tickets, create_order, update_seat, get_seats, get_event
 from app.routers.tickets import get_designated_seats
 from app.database_connection import get_db
@@ -14,7 +14,7 @@ from app.database_connection import get_db
 
 class SeatUpdateRequest(BaseModel):
     seat_numbers: List[int]
-    status: str
+    status: SeatStatus
 
 router = APIRouter()
 

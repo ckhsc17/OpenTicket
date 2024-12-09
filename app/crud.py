@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus, PaymentStatus
+from app.models import SeatStatus, User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus, PaymentStatus
 from app.schemas import (
     UserCreate, UserOut, EventCreate, EventOut,
     VenueCreate, VenueOut, SeatCreate, SeatOut,
@@ -193,7 +193,7 @@ def get_seat(db: Session, seat_id: int) -> Optional[Seat]:
 def get_seats(db: Session, venue_id: int) -> List[Seat]:
     return db.query(Seat).filter(Seat.venue_id == venue_id).all()
 
-def update_seat(db: Session, venue_id: int, status: str, seat_numbers: List[int]) -> Optional[List[int]]:
+def update_seat(db: Session, venue_id: int, status: SeatStatus, seat_numbers: List[int]) -> List[Seat]:
     # 查询所有在 seat_numbers 中的座位
     # 查詢符合 venue_id 和 seat_number 的座位
     seats = db.query(Seat).filter(
@@ -213,20 +213,10 @@ def update_seat(db: Session, venue_id: int, status: str, seat_numbers: List[int]
         print(seat._status)
         updated_seats.append({"seat_id": seat.venue_id, "status": status})  # 保存更新信息
     
-    db.commit()  # 提交更改
-    # Refresh each seat to ensure updated data is loaded
-    for seat in seats:
-        db.refresh(seat)
+        db.commit()  # 提交更改
     
     return updated_seats  # 返回更新后的座位信息
 
-def delete_seat(db: Session, seat_id: int) -> bool:
-    seat = db.query(Seat).filter(Seat.seat_id == seat_id).first()
-    if not seat:
-        return False
-    db.delete(seat)
-    db.commit()
-    return True
 
 # --- 票券 CRUD 操作 ---
 
