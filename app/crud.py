@@ -232,7 +232,7 @@ def create_tickets(db: Session, tickets: List[TicketCreate]) -> List[Ticket]:
     db_tickets = [
         Ticket(
             event_id=ticket.event_id,
-s            order_id=ticket.order_id,
+            order_id=ticket.order_id,
             venue_id=ticket.venue_id, 
             seat_number=ticket.seat_number,
             price=ticket.price,
