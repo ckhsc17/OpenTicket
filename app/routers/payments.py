@@ -2,7 +2,6 @@ import time
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.schemas import EventCreate, EventOut, UserOut, PaymentOut, PaymentCreate
 from app.models import Event, Seat, Ticket, Order, Payment, PaymentStatus
-from app.dependencies import user_dependency
 from app.crud import get_payment, get_orders_list, create_payment, cancel_payment
 from sqlalchemy.orm import Session
 from app.database_connection import get_db

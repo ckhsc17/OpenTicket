@@ -39,13 +39,18 @@ class Token(BaseModel):
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto') # 密碼加密上下文
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='auth/token') # oauth2_bearer 是一個 OAuth2 密碼模式的 token，用於驗證用戶
-oauth2_bearer_dependency = Annotated[str, Depends(oauth2_bearer)] # 這裡的 oauth2_bearer_dependency 是一個依賴項，用於從依賴注入容器中獲取 OAuth2 密碼模式的 token
+
 
 # Get current user
-async def get_current_user(db: Session = Depends(get_db), token: str = Depends(OAuth2PasswordBearer(tokenUrl="auth/token"))):
+async def get_current_user(
+        db: Session = Depends(get_db), 
+        token: str = Depends(oauth2_bearer)
+        ) -> User:
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) # type: ignore
         user_id = payload.get("id")
+
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
         # 確保 user_id 是整數
@@ -90,7 +95,3 @@ def authenticate_user(email: str, password: str, db: Session = Depends(get_db)):
     if not verify_password(password, user.password):
         return False
     return user
-
-db_dependency = Annotated[dict, Depends(get_db)] # 這裡的 db_dependency 是一個依賴項，用於從依賴注入容器中獲取數據庫對象
-user_dependency = Annotated[dict, Depends(get_current_user)] # 這裡的 user_dependency 是一個依賴項，用於從依賴注入容器中獲取當前用戶對象
-

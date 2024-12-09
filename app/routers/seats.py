@@ -1,23 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from requests import get
+from app.dependencies import get_current_user
 from app.schemas import TicketCreate, OrderCreate, EventOut, UserOut
-from app.models import Event, Seat, Ticket, Order
-from app.dependencies import user_dependency, db_dependency
-#from app.routers.auth import SECRET_KEY, ALGORITHM  # 导入 SECRET_KEY 和 ALGORITHM
-from app.crud import get_user, get_user_by_email
+from app.models import Event, Ticket, Order
 from app.crud import create_tickets, create_order, update_seat, get_seats
 from app.routers.tickets import get_designated_seats
 from sqlalchemy.orm import Session
 from app.database_connection import get_db
-from passlib.context import CryptContext
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from typing import Optional
-import os
-from dotenv import load_dotenv
 from pydantic import BaseModel
 from typing import List
-from fastapi.security import OAuth2PasswordBearer
 
 from pydantic import BaseModel
 from typing import List
@@ -44,7 +34,7 @@ def get_all_seats(event_id: int, db: Session = Depends(get_db)):
 
 # Confirm a seat, check if it's available then create an order and ticket
 @router.post("/events/{event_id}/confirm_seat", tags=["Seats"])
-def confirm_seat(ticket: TicketCreate, order: OrderCreate, current_user: user_dependency, db: Session = Depends(get_db)): #event_id到時會由前端傳入
+def confirm_seat(ticket: TicketCreate, order: OrderCreate, current_user = Depends(get_current_user), db: Session = Depends(get_db)): #event_id到時會由前端傳入
     event = db.query(Event).filter(Event.event_id == ticket.event_id).first()
     #ticket.venue_id = event.venue_id #venue_id由後端取得
     #reserved_seats = db.query(Ticket).filter(Ticket.event_id == event_id).all()
