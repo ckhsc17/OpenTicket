@@ -11,7 +11,7 @@ export default function EventDetailsPage() {
   //const searchParams = useSearchParams();
   const { event_id } = useParams();
   const [seats, setSeats] = useState([]);
-  const [selectedSection, setSelectedSection] = useState("Section-1"); // 預設選中的 Section
+  const [selectedSection, setSelectedSection] = useState("Section-0"); // 預設選中的 Section
   const [selectedSeats, setSelectedSeats] = useState([]); // 用戶選擇的座位
   const [lockTimers, setLockTimers] = useState({}); // 記錄每個座位的計時器
   const [isClient, setIsClient] = useState(false);
@@ -285,7 +285,7 @@ export default function EventDetailsPage() {
   const getSeatColor = (_status) => {
     switch (_status) {
       case "Available":
-        return "green";
+        return "#A7D477";
       case "Reserved":
         return "yellow";
       case "Sold":
@@ -301,63 +301,65 @@ export default function EventDetailsPage() {
 
   return (
     <Box p={4} sx={{ minHeight: '100vh', bgcolor: '#f7f7f7' }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-          選擇座位
-        </Typography>
-
-        <Box mb={4} textAlign="center">
-          <Typography variant="h6">選擇區域:</Typography>
-          <Select
-            value={selectedSection}
-            onChange={handleSectionChange}
-            displayEmpty
-            sx={{ mt: 1, minWidth: '200px' }}
-          >
-            {[...Array(10)].map((_, i) => (
-              <MenuItem key={i} value={`Section-${i}`}>
-                Section-{i}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
-
-        <Box
-          display="grid"
-          gridTemplateColumns="repeat(10, 1fr)"
-          gap={1}
-          sx={{ maxWidth: '600px', margin: '0 auto' }}
+    <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+      <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+        選擇座位
+      </Typography>
+  
+      <Box mb={4} textAlign="center">
+        <Typography variant="h6">選擇區域:</Typography>
+        <Select
+          value={selectedSection}
+          onChange={handleSectionChange}
+          displayEmpty
+          sx={{ mt: 1, minWidth: '200px' }}
         >
-          {filteredSeats.map((seat) => (
-            <Box
-              key={`${seat.row}-${seat.seat_number}`}
-              sx={{
-                width: 25,
-                height: 25,
-                backgroundColor: getSeatColor(seat._status),
-                border: selectedSeats.includes(seat.seat_number) ? '2px solid blue' : '1px solid black',
-                borderRadius: 2,
-                cursor: seat._status === "Available" ? 'pointer' : 'not-allowed',
-              }}
-              onClick={() => handleSeatClick(seat.seat_number)}
-            />
+          {[...Array(10)].map((_, i) => (
+            <MenuItem key={i} value={`Section-${i}`}>
+              Section-{i}
+            </MenuItem>
           ))}
-        </Box>
-
-        <Box mt={4} textAlign="center">
-          <Typography variant="body1" gutterBottom>
-            已選座位: {selectedSeats.join(", ")}
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleConfirmSeats}
-            disabled={selectedSeats.length === 0}
-          >
-            確認選位
-          </Button>
-        </Box>
-      </Paper>
-    </Box>
+        </Select>
+      </Box>
+  
+      <Box
+        display="grid"
+        gridTemplateColumns="repeat(10, 1fr)"
+        gap={1}
+        sx={{ maxWidth: '600px', margin: '0 auto' }}
+      >
+        {filteredSeats.map((seat) => (
+          <Box
+            key={`${seat.row}-${seat.seat_number}`}
+            sx={{
+              width: 25,
+              height: 25,
+              backgroundColor: getSeatColor(seat._status),
+              border: selectedSeats.includes(seat.seat_number) ? '2px solid blue' : '1px solid black',
+              borderRadius: 2,
+              cursor: seat._status === "Available" ? 'pointer' : 'not-allowed',
+              opacity: seat._status === "Available" ? 0.7 : 0.5, // 透明度效果：不可選座位透明
+              '&:hover': seat._status === "Available" && { opacity: 0.8 }, // 提供滑鼠懸停效果
+            }}
+            onClick={() => handleSeatClick(seat.seat_number)}
+          />
+        ))}
+      </Box>
+  
+      <Box mt={4} textAlign="center">
+        <Typography variant="body1" gutterBottom>
+          已選座位: {selectedSeats.join(", ")}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleConfirmSeats}
+          disabled={selectedSeats.length === 0}
+        >
+          確認選位
+        </Button>
+      </Box>
+    </Paper>
+  </Box>
   );
 }
