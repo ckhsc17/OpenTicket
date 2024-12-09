@@ -206,17 +206,14 @@ def update_seat(db: Session, venue_id: int, status: SeatStatus, seat_numbers: Li
     if not seats:
         return []  # 如果没有找到对应的座位
     
-    updated_seats = []
     for seat in seats:
         print(seat.seat_number)
         seat._status = status  # 更新每个座位的 status
         print(seat._status)
-        updated_seats.append({"seat_id": seat.seat_number, "status": status})  # 保存更新信息
     
     db.commit()  # 提交更改
     
-    return updated_seats  # 返回更新后的座位信息
-
+    return seats
 
 # --- 票券 CRUD 操作 ---
 
