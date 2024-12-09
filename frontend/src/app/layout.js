@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
     <AuthProvider>
     <html lang="en">
       <head>
-        <title>TicketEase</title>
+        <title>OpenTicket</title>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
         {/* 這裡添加 Material Icons 的 Google Web Fonts */}

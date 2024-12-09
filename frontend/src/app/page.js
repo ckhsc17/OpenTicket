@@ -67,7 +67,7 @@ export default function HomePage() {
                 }}
             >
                 <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
-                    TicketEase 活動訂票系統
+                    OpenTicket 活動訂票系統
                 </Typography>
 
                 {loading ? (
