@@ -73,12 +73,12 @@ export default function EventListPage() {
         if (user) {
             const fetchUserOrder = async () => {
                 try {
-                    // const response = await fetch(`http://localhost:8000/orders/${user.user_id}`, {
+                    const response = await fetch(`http://localhost:8000/orders/${user.user_id}`);
                     //     headers: {
                     //         'Authorization': `Bearer ${token}`,
                     //     }
                     // });
-                    const response = await fetch(`http://localhost:8000/orders/103`);
+                    // const response = await fetch(`http://localhost:8000/orders/20003`);
                     const data = await response.json();
                     console.log("User order data: ", data);
                     setOrders(data);
@@ -89,8 +89,8 @@ export default function EventListPage() {
 
             const fetchUserTickets = async () => {
                 try {
-                    // const response = await fetch(`http://localhost:8000/users/${user.user_id}/sold_tickets`);
-                    const response = await fetch(`http://localhost:8000/users/103/sold_tickets`);
+                    const response = await fetch(`http://localhost:8000/users/${user.user_id}/sold_tickets`);
+                    // const response = await fetch(`http://localhost:8000/users/20003/sold_tickets`);
                     const data = await response.json();
                     console.log("User ticket data: ", data);
                     setTickets(data);
@@ -101,8 +101,8 @@ export default function EventListPage() {
 
             const fetchUserPayments = async () => {
                 try {
-                    // const response = await fetch(`http://localhost:8000/payments/${user.user_id}`);
-                    const response = await fetch(`http://localhost:8000/payments/103`);
+                    const response = await fetch(`http://localhost:8000/payments/${user.user_id}`);
+                    // const response = await fetch(`http://localhost:8000/payments/20003`);
                     const data = await response.json();
                     console.log("User payment data: ", data);
                     setPayments(data);

@@ -209,9 +209,6 @@ def update_seat(db: Session, venue_id: int, status: SeatStatus, seat_numbers: Li
     for seat in seats:
         print(seat.seat_number)
         seat._status = status  # 更新每个座位的 status
-        print(seat._status)
-        updated_seats.append({"seat_id": seat.venue_id, "status": status})  # 保存更新信息
-        print(updated_seats)
 
     #db.add_all(seats)  # 添加所有座位
     try:

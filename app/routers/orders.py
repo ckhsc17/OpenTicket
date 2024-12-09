@@ -45,8 +45,8 @@ def create_order_for_user(order: OrderCreate, db: Session = Depends(get_db)):
     print("new_order", new_order.order_id)
     return new_order
 
-# cancel an order
-@router.put("/orders/{order_id}/cancel", tags=["Orders"])
-async def cancel_order(order_id: int, db: Session = Depends(get_db)):
-    print("hi from cancel_order")
-    update_order(db, order_id, OrderStatus.Canceled)
+# update an order
+@router.put("/orders/{order_id}/order_paid", tags=["Orders"])
+async def update_order_paid(order_id: int, db: Session = Depends(get_db)):
+    print("hi from update_order")
+    update_order(db, order_id, OrderStatus.Paid)
