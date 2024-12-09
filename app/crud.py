@@ -204,9 +204,8 @@ def update_seat(db: Session, venue_id: int, status: SeatStatus, seat_numbers: Li
     print(type(seats))
     print(seats[0]._status)
     if not seats:
-        return None  # 如果没有找到对应的座位
+        return []  # 如果没有找到对应的座位
     
-    updated_seats = []
     for seat in seats:
         print(seat.seat_number)
         seat._status = status  # 更新每个座位的 status
@@ -233,7 +232,7 @@ def create_tickets(db: Session, tickets: List[TicketCreate]) -> List[Ticket]:
     db_tickets = [
         Ticket(
             event_id=ticket.event_id,
-            order_id=ticket.order_id,
+s            order_id=ticket.order_id,
             venue_id=ticket.venue_id, 
             seat_number=ticket.seat_number,
             price=ticket.price,
