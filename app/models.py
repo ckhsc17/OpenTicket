@@ -68,7 +68,7 @@ class SeatStatus(str, enum.Enum):
 
 class Seat(Base):
     __tablename__ = "seats"
-    venue_id = Column(Integer, ForeignKey("venues.venue_id", ondelete="CASCADE"), primary_key=True)
+    venue_id = Column(Integer, ForeignKey("venues.venue_id"), primary_key=True) #, ondelete="CASCADE"
     seat_number = Column(String(5), primary_key=True)
     section = Column(String(20))
     row = Column(String(5))

@@ -212,10 +212,19 @@ def update_seat(db: Session, venue_id: int, status: SeatStatus, seat_numbers: Li
         seat._status = status  # 更新每个座位的 status
         print(seat._status)
         updated_seats.append({"seat_id": seat.venue_id, "status": status})  # 保存更新信息
+        print(updated_seats)
+
+    #db.add_all(seats)  # 添加所有座位
+    try:
+        print("Pending changes:", db.new)
+        print("Dirty objects:", db.dirty)
+        print("Deleted objects:", db.deleted)
+        db.commit()
+    except Exception:
+        db.rollback()
+    #db.refresh(seats) 為什麼不行refresh
     
-        db.commit()  # 提交更改
-    
-    return updated_seats  # 返回更新后的座位信息
+    return seat  # 返回更新后的座位信息
 
 
 # --- 票券 CRUD 操作 ---
