@@ -4,6 +4,7 @@ dependencies.py 模組包含了 FastAPI 應用中的依賴項，實作了用戶�
 
 import os
 from typing import List
+from arrow import get
 from dotenv import load_dotenv 
 from datetime import datetime, timedelta, timezone
 
@@ -62,12 +63,8 @@ async def get_current_user(
     except (JWTError, ValueError):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token is invalid")
 
-def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
-    # 可以在這裡檢查用戶是否激活或其他狀態
-    return current_user
-
 def require_role(required_roles: List[str]):
-    def role_dependency(current_user: User = Depends(get_current_active_user)):
+    def role_dependency(current_user: User = Depends(get_current_user)):
         if current_user.role not in required_roles:
             raise HTTPException(status_code=403, detail="Operation not permitted")
         return current_user
@@ -83,6 +80,10 @@ def create_access_token(username: str, user_id: int, expires_delta: timedelta):
 def check_organizer_role(user: User):
     if str(user.role) != UserRole.Organizer:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only organizers can perform this action")
+
+def check_admin_role(user: User):
+    if str(user.role) != UserRole.Admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins can perform this action")
 
 def verify_password(plain_password, hashed_password):
     return bcrypt_context.verify(plain_password, hashed_password)
