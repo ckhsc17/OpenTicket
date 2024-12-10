@@ -101,7 +101,7 @@ export default function EventListPage() {
 
             const fetchUserPayments = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8000/payments/${user.user_id}`);
+                    const response = await fetch(`http://localhost:8000/payments/user/${user.user_id}`);
                     // const response = await fetch(`http://localhost:8000/payments/20003`);
                     const data = await response.json();
                     console.log("User payment data: ", data);
@@ -109,7 +109,7 @@ export default function EventListPage() {
                 } catch (error) {
                     console.error('Error fetching payment source:', error);
                 }
-            }
+            };
 
             fetchUserOrder();
             fetchUserTickets();
