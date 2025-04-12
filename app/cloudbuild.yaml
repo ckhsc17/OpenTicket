@@ -1,0 +1,37 @@
+steps:
+  # 🔧 Build Backend
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build Backend
+    dir: .
+    args: [
+      'build',
+      '-t', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend:latest',
+      '.'
+    ]
+    secretEnv: ['SECRET_KEY', 'AUTH_ALGORITHM', 'SUPABASE_DB_URL', 'API_URL']
+
+  # 🚚 Push Backend
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend:latest']
+
+  # 🚀 Deploy Backend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: [
+      'gcloud', 'run', 'deploy', 'ticketease-backend-prod',
+      '--image', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend:latest',
+      '--region', 'asia-east1', '--platform', 'managed',
+      '--allow-unauthenticated',
+      '--add-cloudsql-instances', 'your-project-id:asia-east1:your-sql-instance'
+    ]
+
+substitutions:
+  _API_URL: "https://ticketease-frontend-prod-abc123.a.run.app"
+
+secrets:
+- secretEnv:
+    SECRET_KEY: projects/$PROJECT_ID/secrets/TICKETEASE_SECRET_KEY/versions/latest
+    AUTH_ALGORITHM: projects/$PROJECT_ID/secrets/TICKETEASE_AUTH_ALGORITHM/versions/latest
+    SUPABASE_DB_URL: projects/$PROJECT_ID/secrets/SUPABASE_DB_URL/versions/latest
+    API_URL: $_API_URL
+
+timeout: 1200s

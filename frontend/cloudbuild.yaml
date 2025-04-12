@@ -1,0 +1,28 @@
+steps:
+  # 🌐 Build Frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build Frontend
+    dir: .
+    args: [
+      'build',
+      '-t', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/frontend:${_ENV}',
+      '.'
+    ]
+
+  # 🚚 Push Frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/frontend:${_ENV}']
+
+  # 🚀 Deploy Frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: [
+      'gcloud', 'run', 'deploy', 'ticketease-frontend-${_ENV}',
+      '--image', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/frontend:${_ENV}',
+      '--region', 'asia-east1', '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
+
+substitutions:
+  _ENV: "staging"  # 或 production，可依照觸發條件切換
+
+timeout: 600s

@@ -1,0 +1,47 @@
+steps:
+# build backend
+- name: 'gcr.io/cloud-builders/docker'
+  id: Build Backend
+  dir: backend
+  args: ['build', '-t', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend', '.']
+  secretEnv: ['SUPABASE_DB_URL', 'STRIPE_SECRET_KEY']
+
+# build frontend
+- name: 'gcr.io/cloud-builders/docker'
+  id: Build Frontend
+  dir: frontend
+  args: ['build', '-t', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/frontend', '.']
+  secretEnv: ['SUPABASE_ANON_KEY']
+
+# push backend
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend']
+
+# push frontend
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/frontend']
+
+# deploy backend
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+    ['gcloud', 'run', 'deploy', 'ticketease-backend',
+     '--image', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend',
+     '--region', 'asia-east1', '--platform', 'managed',
+     '--allow-unauthenticated']
+
+# deploy frontend
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args:
+    ['gcloud', 'run', 'deploy', 'ticketease-frontend',
+     '--image', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/frontend',
+     '--region', 'asia-east1', '--platform', 'managed',
+     '--allow-unauthenticated']
+
+# secret 定義（這邊指定哪些 GCP secret 對應哪些環境變數）
+secrets:
+- secretEnv:
+    SUPABASE_DB_URL: projects/$PROJECT_ID/secrets/SUPABASE_DB_URL/versions/latest
+    SUPABASE_ANON_KEY: projects/$PROJECT_ID/secrets/SUPABASE_ANON_KEY/versions/latest
+    STRIPE_SECRET_KEY: projects/$PROJECT_ID/secrets/STRIPE_SECRET_KEY/versions/latest
+
+timeout: 1200s
