@@ -62,7 +62,7 @@ export default function EventDetailsPage() {
 
     const fetchSeats = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/events/${event_id}/get_seats`, {
+        const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events/${event_id}/get_seats`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
@@ -117,7 +117,7 @@ export default function EventDetailsPage() {
     try {
       // 發送請求到後端
       const response = await fetch(
-        `http://localhost:8000/seats/${localStorage.getItem('venue_id')}/update_seat`,
+        `http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/seats/${localStorage.getItem('venue_id')}/update_seat`,
         {
           method: 'PUT',
           headers: {
@@ -194,7 +194,7 @@ export default function EventDetailsPage() {
   
     // 創建訂單
     try {
-      const response = await fetch("http://localhost:8000/orders", {
+      const response = await fetch("http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -239,7 +239,7 @@ export default function EventDetailsPage() {
 
   // 創建票券
     try {
-      const response = await fetch("http://localhost:8000/tickets", {
+      const response = await fetch("http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/tickets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

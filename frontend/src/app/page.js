@@ -19,7 +19,7 @@ export default function HomePage() {
             }
 
             try {
-                const response = await fetch('http://localhost:8000/auth/users/me', {
+                const response = await fetch('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/auth/users/me', {
                     headers: {
                         Authorization: `Bearer ${storedToken}`,
                     },

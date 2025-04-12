@@ -24,7 +24,7 @@ export default function EventDetailsPage() {
           return;
         }
 
-        const response = await fetch(`http://localhost:8000/events/${event_id}`, {
+        const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events/${event_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

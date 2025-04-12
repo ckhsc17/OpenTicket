@@ -43,14 +43,14 @@ export default function OrganizerEventListPage() {
 
             try {
                 setLoading(true);
-                const eventResponse = await axios.get(`http://localhost:8000/analysis/organizer/6540`, {
+                const eventResponse = await axios.get(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/analysis/organizer/6540`, {
                     headers: {
                         Authorization: `Bearer ${storedToken}`,
                     },
                 });
                 setEvents(eventResponse.data);
 
-                const orderResponse = await axios.get(`http://localhost:8000/analysis/orders/recent/6540`, {
+                const orderResponse = await axios.get(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/analysis/orders/recent/6540`, {
                     headers: {
                         Authorization: `Bearer ${storedToken}`,
                     },
@@ -80,7 +80,7 @@ export default function OrganizerEventListPage() {
         }
 
         try {
-            const response = await axios.get(`http://localhost:8000/analysis/events/${eventId}`, {
+            const response = await axios.get(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/analysis/events/${eventId}`, {
                 headers: {
                     Authorization: `Bearer ${storedToken}`,
                 },
@@ -101,7 +101,7 @@ export default function OrganizerEventListPage() {
         }
 
         try {
-            await axios.put(`http://localhost:8000/events/${editingEvent.event_id}`, editingEvent, {
+            await axios.put(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events/${editingEvent.event_id}`, editingEvent, {
                 headers: {
                     Authorization: `Bearer ${storedToken}`,
                 },

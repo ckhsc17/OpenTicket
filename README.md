@@ -49,7 +49,7 @@ OpenTicket 是一個致力於簡化活動管理和票務操作的線上平台，
 #### 票務監控：
 - 查看全平台票券銷售記錄，分析售出票券數量與未售票數量。
 
-## 使用方法
+## 使用方法（本地開發版）
 - 使用我們的Supabase Token 連線到我們的資料庫或是使用data資料夾下的csv檔案匯入本機端（若有需求可至最下方「聯繫方式」）
 - 在本機端輸入 `python3 -m venv .venv` 創建虛擬環境（推薦做法）
 - 在本機端執行 `pip install -r requirements.txt` 安裝後端相關套件
@@ -58,6 +58,9 @@ OpenTicket 是一個致力於簡化活動管理和票務操作的線上平台，
 - 進入frontend資料夾，輸入 `sudo npm run dev` 啟動前端伺服器
 - 進入瀏覽器輸入預設連線通道 `http://localhost:3000` 即可使用
 - 若想執行多個client測試，進入frontend資料夾後輸入 `sudo npm run dev:3001` 啟動第二台前端伺服器（可參考 `/frontend/package.json` 設定）
+
+## 使用方法（雲端部署版）
+- 直接訪問 https://ticketease-frontend-staging-396633212684.asia-east1.run.app/
 
 ## 技術細節
 1.	後端技術

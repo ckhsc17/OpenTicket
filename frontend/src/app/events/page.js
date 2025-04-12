@@ -21,7 +21,7 @@ export default function EventListPage() {
       const skip = (page - 1) * eventsPerPage;
       const limit = eventsPerPage;
 
-      const response = await axios.get('http://localhost:8000/events', {
+      const response = await axios.get('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events', {
         headers: {
           Authorization: `Bearer ${storedToken}`,
         },
