@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.schemas import TicketCreate
-from app.models import Event, Seat, Ticket, Order
-from app.crud import create_tickets, get_ticket_by_ticket_id
-from app.database_connection import get_db
+from schemas import TicketCreate
+from models import Event, Seat, Ticket, Order
+from crud import create_tickets, get_ticket_by_ticket_id
+from database_connection import get_db
 
 router = APIRouter()
 

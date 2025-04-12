@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.schemas import EventAnalytics, OrderOut
-from app.crud import count_total_seats, utilized_seats, total_sales, total_participants, get_event, get_venue, get_recent_orders, get_events_by_organizer
-from app.database_connection import get_db
+from schemas import EventAnalytics, OrderOut
+from crud import count_total_seats, utilized_seats, total_sales, total_participants, get_event, get_venue, get_recent_orders, get_events_by_organizer
+from database_connection import get_db
 
 router = APIRouter()
 

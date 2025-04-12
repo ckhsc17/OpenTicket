@@ -15,9 +15,9 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 
 from sqlalchemy.orm import Session
-from app.models import User, UserRole
-from app.database_connection import get_db
-from app.crud import get_user_by_email, get_user
+from models import User, UserRole
+from database_connection import get_db
+from crud import get_user_by_email, get_user
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
