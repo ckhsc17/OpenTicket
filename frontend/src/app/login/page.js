@@ -36,7 +36,7 @@ const Login = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/auth/register', {
+      await axios.post('https://ticketease-backend-prod-396633212684.asia-east1.run.app/auth/register', {
         username: registerUsername,
         email: email,
         phone: phone,

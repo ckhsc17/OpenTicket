@@ -2,7 +2,7 @@ import requests
 import faker
 import random
 
-url = 'http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events'
+url = 'https://ticketease-backend-prod-396633212684.asia-east1.run.app/events'
 payload = {
     "event_name": "Sample Event",
     "performer": "Sample Performer",
