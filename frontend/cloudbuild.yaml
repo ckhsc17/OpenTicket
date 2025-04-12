@@ -1,5 +1,5 @@
 steps:
-  # 🌐 Build Frontend
+  # 🔨 Build Frontend
   - name: 'gcr.io/cloud-builders/docker'
     id: Build Frontend
     dir: 'frontend'
@@ -22,10 +22,9 @@ steps:
       '--allow-unauthenticated'
     ]
 
-options:
-  logging: CLOUD_LOGGING_ONLY 
-
 substitutions:
-  _ENV: "staging"  # 或 production，可依照觸發條件切換
+  _ENV: "staging"
 
+options:
+  logging: CLOUD_LOGGING_ONLY
 timeout: 600s
