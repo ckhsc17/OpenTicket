@@ -46,7 +46,7 @@ export default function AdminInterfacePage() {
             const token = localStorage.getItem('token');
             const skip = (page - 1) * eventsPerPage;
 
-            const response = await axios.get('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events', {
+            const response = await axios.get('https://ticketease-backend-prod-396633212684.asia-east1.run.app/events', {
                 params: { skip, limit: eventsPerPage },
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -64,7 +64,7 @@ export default function AdminInterfacePage() {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${eventId}`, {
+            const response = await axios.get(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${eventId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setOrders(response.data);
@@ -80,7 +80,7 @@ export default function AdminInterfacePage() {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events/${eventId}/sold_tickets`, {
+            const response = await axios.get(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/events/${eventId}/sold_tickets`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setTickets(response.data);

@@ -23,7 +23,7 @@ function PaymentInner() {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events/${event_id}`);
+        const response = await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/events/${event_id}`);
         if (!response.ok) throw new Error('Failed to fetch event details');
         const data = await response.json();
         setEventDetails(data);
@@ -52,7 +52,7 @@ function PaymentInner() {
         status: "Completed",
       };
 
-      const response = await fetch('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/payments', {
+      const response = await fetch('https://ticketease-backend-prod-396633212684.asia-east1.run.app/payments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentData),
@@ -65,13 +65,13 @@ function PaymentInner() {
         status: "Sold",
       };
 
-      await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/seats/${eventDetails.venue_id}/update_seat`, {
+      await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/seats/${eventDetails.venue_id}/update_seat`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(seatData),
       });
 
-      await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${order_id}/order_paid`, {
+      await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${order_id}/order_paid`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -86,7 +86,7 @@ function PaymentInner() {
 
   const handleCancelPayment = async () => {
     try {
-      await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${order_id}/cancel`, {
+      await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${order_id}/cancel`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -96,7 +96,7 @@ function PaymentInner() {
         status: "Available",
       };
 
-      await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/seats/${eventDetails.venue_id}/update_seat`, {
+      await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/seats/${eventDetails.venue_id}/update_seat`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(seatData),

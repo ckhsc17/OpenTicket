@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
             formData.append('password', password);
             //這邊要再加上user_id
             
-            const response = await axios.post('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/auth/token', formData, {
+            const response = await axios.post('https://ticketease-backend-prod-396633212684.asia-east1.run.app/auth/token', formData, {
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             }); // 向 server 发送请求，获取 token
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`; //client 向 server 发送请求时，会自动带上 token

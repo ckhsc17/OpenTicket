@@ -48,7 +48,7 @@ export default function EventListPage() {
             console.log("Component loaded");
             const fetchUserData = async () => {
                 try {
-                    const response = await fetch('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/auth/users/me', {
+                    const response = await fetch('https://ticketease-backend-prod-396633212684.asia-east1.run.app/auth/users/me', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         }
@@ -73,12 +73,12 @@ export default function EventListPage() {
         if (user) {
             const fetchUserOrder = async () => {
                 try {
-                    const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${user.user_id}`);
+                    const response = await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/${user.user_id}`);
                     //     headers: {
                     //         'Authorization': `Bearer ${token}`,
                     //     }
                     // });
-                    // const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/20003`);
+                    // const response = await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/orders/20003`);
                     const data = await response.json();
                     console.log("User order data: ", data);
                     setOrders(data);
@@ -89,8 +89,8 @@ export default function EventListPage() {
 
             const fetchUserTickets = async () => {
                 try {
-                    const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/users/${user.user_id}/sold_tickets`);
-                    // const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/users/20003/sold_tickets`);
+                    const response = await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/users/${user.user_id}/sold_tickets`);
+                    // const response = await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/users/20003/sold_tickets`);
                     const data = await response.json();
                     console.log("User ticket data: ", data);
                     setTickets(data);
@@ -101,8 +101,8 @@ export default function EventListPage() {
 
             const fetchUserPayments = async () => {
                 try {
-                    const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/payments/user/${user.user_id}`);
-                    // const response = await fetch(`http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/payments/20003`);
+                    const response = await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/payments/user/${user.user_id}`);
+                    // const response = await fetch(`https://ticketease-backend-prod-396633212684.asia-east1.run.app/payments/20003`);
                     const data = await response.json();
                     console.log("User payment data: ", data);
                     setPayments(data);
