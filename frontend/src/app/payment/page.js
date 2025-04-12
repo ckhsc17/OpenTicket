@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Typography, Box, Select, MenuItem, TextField, CircularProgress, Paper } from '@mui/material';
+import { Suspense } from 'react';
 
-export default function PaymentPage() {
+function PaymentInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const order_id = searchParams.get('order_id');
@@ -16,8 +17,8 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const ticketPrice = 500; // 固定票價
-  const totalAmount = seat_numbers.length * ticketPrice; // 總金額
+  const ticketPrice = 500;
+  const totalAmount = seat_numbers.length * ticketPrice;
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -70,10 +71,10 @@ export default function PaymentPage() {
         body: JSON.stringify(seatData),
       });
 
-      await fetch(`http://localhost:8000/orders/${order_id}/order_paid`), {
+      await fetch(`http://localhost:8000/orders/${order_id}/order_paid`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' }
-      }
+      });
 
       alert('付款成功！');
       router.push('/');
@@ -207,5 +208,13 @@ export default function PaymentPage() {
         )}
       </Paper>
     </Box>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div>Loading page...</div>}>
+      <PaymentInner />
+    </Suspense>
   );
 }
