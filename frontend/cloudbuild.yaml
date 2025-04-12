@@ -22,6 +22,9 @@ steps:
       '--allow-unauthenticated'
     ]
 
+options:
+  default_logs_bucket_behavior: CLOUD_LOGGING_ONLY 
+
 substitutions:
   _ENV: "staging"  # 或 production，可依照觸發條件切換
 

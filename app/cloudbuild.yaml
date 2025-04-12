@@ -24,6 +24,9 @@ steps:
       '--add-cloudsql-instances', 'your-project-id:asia-east1:your-sql-instance'
     ]
 
+options:
+  default_logs_bucket_behavior: CLOUD_LOGGING_ONLY 
+
 substitutions:
   _API_URL: "https://ticketease-frontend-prod-abc123.a.run.app"
 
