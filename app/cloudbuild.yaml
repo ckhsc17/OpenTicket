@@ -1,5 +1,5 @@
 steps:
-  # 🔧 Build Backend
+  # Build Backend
   - name: 'gcr.io/cloud-builders/docker'
     id: Build Backend
     dir: 'app'
@@ -10,11 +10,11 @@ steps:
     ]
     secretEnv: ['SECRET_KEY', 'AUTH_ALGORITHM', 'SUPABASE_DB_URL', 'API_URL']
 
-  # 🚚 Push Backend
+  # Push Backend
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend:latest']
 
-  # 🚀 Deploy Backend to Cloud Run
+  # Deploy Backend to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     args: [
       'gcloud', 'run', 'deploy', 'ticketease-backend-prod',
