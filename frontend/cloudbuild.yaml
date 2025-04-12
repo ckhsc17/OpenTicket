@@ -2,7 +2,7 @@ steps:
   # 🌐 Build Frontend
   - name: 'gcr.io/cloud-builders/docker'
     id: Build Frontend
-    dir: .
+    dir: 'frontend'
     args: [
       'build',
       '-t', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/frontend:${_ENV}',
