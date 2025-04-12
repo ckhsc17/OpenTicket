@@ -9,6 +9,8 @@
 
 OpenTicket 是一個致力於簡化活動管理和票務操作的線上平台，主打開源及客製化，讓用戶可以瀏覽、預訂及管理演唱會、講座、比賽等活動票券。平台的核心價值在於透過易於使用的功能接口，讓主辦方更有效地管理活動資訊、票務銷售和場地設置，同時讓用戶便捷地查詢、選購票券、並且盡量確保選位流程的正確性。
 
+詳細細節可參考 report.pdf。
+
 🔗 [展示影片連結](https://www.youtube.com/watch?v=M3Gjyj0CihU)
 
 ## 使用者功能
@@ -48,10 +50,14 @@ OpenTicket 是一個致力於簡化活動管理和票務操作的線上平台，
 - 查看全平台票券銷售記錄，分析售出票券數量與未售票數量。
 
 ## 使用方法
-- 使用我們的Supabase Token 連線到我們的資料庫或是使用data資料夾下的csv檔案匯入本機端
-- 輸入 `uvicorn app.main:app --reload` 啟動fastapi後端伺服器
+- 使用我們的Supabase Token 連線到我們的資料庫或是使用data資料夾下的csv檔案匯入本機端（若有需求可至最下方「聯繫方式」）
+- 在本機端輸入 `python3 -m venv .venv` 創建虛擬環境（推薦做法）
+- 在本機端執行 `pip install -r requirements.txt` 安裝後端相關套件
+- 進入frontend資料夾，在本機端執行 `npm install` 安裝前端相關套件
+- 在專案目錄底下輸入 `uvicorn app.main:app --reload` 啟動fastAPI後端伺服器
 - 進入frontend資料夾，輸入 `sudo npm run dev` 啟動前端伺服器
 - 進入瀏覽器輸入預設連線通道 `http://localhost:3000` 即可使用
+- 若想執行多個client測試，進入frontend資料夾後輸入 `sudo npm run dev:3001` 啟動第二台前端伺服器（可參考 `/frontend/package.json` 設定）
 
 ## 技術細節
 1.	後端技術
@@ -92,3 +98,6 @@ OpenTicket 是一個致力於簡化活動管理和票務操作的線上平台，
 - [FastAPI 官方文檔](https://fastapi.tiangolo.com/)
 - [Supabase 官方文檔](https://supabase.io/docs)
 - [Next.js 官方文檔](https://nextjs.org/docs)
+
+## 聯繫方式
+若有任何問題，請聯繫 bowenchen0227@gmail.com
