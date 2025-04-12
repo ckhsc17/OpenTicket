@@ -28,12 +28,12 @@ options:
   logging: CLOUD_LOGGING_ONLY 
 
 substitutions:
-  _API_URL: "https://ticketease-frontend-prod-abc123.a.run.app"
+  _API_URL: "https://ticketease-frontend-staging-396633212684.asia-east1.run.app/"
 
 secrets:
 - secretEnv:
     SECRET_KEY: projects/$PROJECT_ID/secrets/TICKETEASE_SECRET_KEY/versions/latest
-    AUTH_ALGORITHM: projects/$PROJECT_ID/secrets/TICKETEASE_AUTH_ALGORITHM/versions/latest
+    AUTH_ALGORITHM: 'HS256'
     SUPABASE_DB_URL: projects/$PROJECT_ID/secrets/SUPABASE_DB_URL/versions/latest
     API_URL: $_API_URL
 
