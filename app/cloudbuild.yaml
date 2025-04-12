@@ -21,14 +21,14 @@ steps:
       '--image', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend:latest',
       '--region', 'asia-east1', '--platform', 'managed',
       '--allow-unauthenticated',
-      #'--add-cloudsql-instances', 'your-project-id:asia-east1:your-sql-instance'
+      # '--add-cloudsql-instances', 'your-project-id:asia-east1:your-sql-instance'
     ]
 
 options:
-  logging: CLOUD_LOGGING_ONLY 
+  logging: CLOUD_LOGGING_ONLY
 
 secrets:
-- secretEnv:
+  - secretEnv:
     SECRET_KEY: projects/$PROJECT_ID/secrets/TICKETEASE_SECRET_KEY/versions/latest
     AUTH_ALGORITHM: 'HS256'
     SUPABASE_DB_URL: projects/$PROJECT_ID/secrets/SUPABASE_DB_URL/versions/latest
