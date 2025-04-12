@@ -43,7 +43,7 @@ export default function CreateEventPage() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8000/events', formData, {
+            const response = await axios.post('http://https://ticketease-backend-prod-396633212684.asia-east1.run.app/events', formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
