@@ -55,4 +55,6 @@ app.include_router(analytics.router)
 # app.include_router(users.router)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="localhost", port=8000, reload=True)
+    import os
+    port = int(os.environ.get("PORT", 8000))  # 預設為 8000，但也支援環境變數 PORT
+    uvicorn.run("main:app", host="0.0.0.0", port=port) #reload=True
