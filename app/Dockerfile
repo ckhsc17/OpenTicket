@@ -11,5 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 複製整個應用程式碼
 COPY . .
 
+# 設定容器執行時的 Port
+EXPOSE 8080
+
 # 開啟 Uvicorn 啟動 FastAPI
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
