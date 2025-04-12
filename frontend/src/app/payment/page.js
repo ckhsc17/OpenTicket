@@ -70,6 +70,11 @@ export default function PaymentPage() {
         body: JSON.stringify(seatData),
       });
 
+      await fetch(`http://localhost:8000/orders/${order_id}/order_paid`), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' }
+      }
+
       alert('付款成功！');
       router.push('/');
     } catch (error) {
