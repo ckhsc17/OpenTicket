@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import date, datetime
-from app.models import OrderStatus, PaymentStatus, PaymentMethod, UserRole
+from models import OrderStatus, PaymentStatus, PaymentMethod, UserRole
 import enum
 
 class UserBase(BaseModel):

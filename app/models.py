@@ -6,7 +6,7 @@ models.py 模組包含了應用中的數據模型，使用 SQLAlchemy ORM 定義
 import enum
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL, Date, DateTime, Enum, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
-from app.database_connection import Base
+from database_connection import Base
 from sqlalchemy import Enum as SQLAlchemyEnum
 
 class UserRole(str, enum.Enum):
