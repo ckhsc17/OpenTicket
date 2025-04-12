@@ -2,7 +2,7 @@ steps:
   # 🔧 Build Backend
   - name: 'gcr.io/cloud-builders/docker'
     id: Build Backend
-    dir: .
+    dir: 'backend'
     args: [
       'build',
       '-t', 'asia-east1-docker.pkg.dev/$PROJECT_ID/ticketease/backend:latest',
