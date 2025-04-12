@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models import SeatStatus, User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus, PaymentStatus
-from app.schemas import (
+from models import SeatStatus, User, Event, Venue, Seat, Ticket, Order, Payment, OrderStatus, PaymentStatus
+from schemas import (
     UserCreate, UserOut, EventCreate, EventOut,
     VenueCreate, VenueOut, SeatCreate, SeatOut,
     TicketCreate, TicketOut, OrderCreate, OrderOut,
