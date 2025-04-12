@@ -4,13 +4,12 @@ FROM python:3.8.16-slim
 # 設定工作目錄
 WORKDIR /app
 
-# 安裝必要的套件
-COPY backend/requirements.txt .
-
+# 複製需求檔案並安裝
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 複製程式碼
-COPY backend/ .
+# 複製整個應用程式碼
+COPY . .
 
-# 啟動 FastAPI with Uvicorn
+# 開啟 Uvicorn 啟動 FastAPI
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
