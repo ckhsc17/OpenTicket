@@ -56,5 +56,5 @@ app.include_router(analytics.router)
 
 if __name__ == "__main__":
     import os
-    port = int(os.environ.get("PORT", 8000))  # 預設為 8000，但也支援環境變數 PORT
+    port = int(os.environ.get("PORT", 8080))  # 預設為 8080，但也支援環境變數 PORT
     uvicorn.run("main:app", host="0.0.0.0", port=port) #reload=True
