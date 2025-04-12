@@ -32,6 +32,6 @@ secrets:
     SECRET_KEY: projects/$PROJECT_ID/secrets/TICKETEASE_SECRET_KEY/versions/latest
     AUTH_ALGORITHM: 'HS256'
     SUPABASE_DB_URL: projects/$PROJECT_ID/secrets/SUPABASE_DB_URL/versions/latest
-    API_URL: "https://ticketease-frontend-staging-396633212684.asia-east1.run.app/"
+    API_URL: projects/$PROJECT_ID/secrets/API_URL/versions/latest
 
 timeout: 1200s
