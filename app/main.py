@@ -22,7 +22,7 @@ origins = [
     "*",  # 允許所有來源
     # 您也可以指定具體的前端應用網址，例如：
     # "http://localhost",
-    "http://localhost:3000",
+    # "http://localhost:3000",
     # "https://your-frontend-app.com",
 ]
 
@@ -53,8 +53,3 @@ app.include_router(seats.router)
 app.include_router(payments.router) 
 app.include_router(analytics.router)
 # app.include_router(users.router)
-
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 8080))  # 預設為 8080，但也支援環境變數 PORT
-    uvicorn.run("main:app", host="0.0.0.0", port=port) #reload=True
